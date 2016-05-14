@@ -1,7 +1,8 @@
 /**
  * JJTree template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
- */options{  static = true;}PARSER_BEGIN(Grammar)
-public class Grammar{  public static void main(String args [])  {    System.out.println("Reading from standard input...");    System.out.print("Enter an expression like \"1+(2+3)*var;\" :");    new Grammar(System.in);    try    {      SimpleNode n = Grammar.Start();      n.dump("");      System.out.println("Thank you.");    }    catch (Exception e)    {      System.out.println("Oops.");      System.out.println(e.getMessage());    }  }}PARSER_END(Grammar)SKIP :{
+ */options{  static = true;
+  LOOKAHEAD = 2;}PARSER_BEGIN(Grammar)
+public class Grammar{  public static void main(String args [])  {    System.out.println("Reading from standard input...");    System.out.print("Enter an expression like \"1+(2+3)*var;\" :");    new Grammar(System.in);    try    {      SimpleNode n = Grammar.Module();      n.dump("");      System.out.println("Thank you.");    }    catch (Exception e)    {      System.out.println("Oops.");      System.out.println(e.getMessage());    }  }}PARSER_END(Grammar)SKIP :{
 " "
 | "\t"
 | "\n"
@@ -9,7 +10,7 @@ public class Grammar{  public static void main(String args [])  {    System.
 | <"//" (~["\n","\r"])* ("\n" | "\r" | "\r\n")>
 | <"/*" (~["*"])* "*" ("*" | ~["*","/"] (~["*"])* "*")* "/">
 }
-TOKEN : /* LITERALS */{/*  < INTEGER_LITERAL :    < DECIMAL_LITERAL > ([ "l", "L" ])?  | < HEX_LITERAL > ([ "l", "L" ])?  | < OCTAL_LITERAL > ([ "l", "L" ])?     >| < #DECIMAL_LITERAL : [ "1"-"9" ] ([ "0"-"9" ])* >| < #HEX_LITERAL : "0" [ "x", "X" ] ([ "0"-"9", "a"-"f", "A"-"F" ])+ >| < #OCTAL_LITERAL : "0" ([ "0"-"7" ])* >*/
+TOKEN : /* LITERALS */{
 
 <RELA_OP: ">" | "<" | "<=" | ">=" | "==" | "!=">
 | <ADDSUB_OP: "+" | "-">
@@ -30,11 +31,123 @@ public class Grammar{  public static void main(String args [])  {    System.
 | <FUNCTION: "function">
 | <MODULE: "module">
 | <SIZE: "size">
-}TOKEN : /* IDENTIFIERS */{  /*< IDENTIFIER :    < LETTER >    (      < LETTER >    | < DIGIT >    )* >| < #LETTER : [ "_", "a"-"z", "A"-"Z" ] >| < #DIGIT : [ "0"-"9" ] >
-*/
+}TOKEN : /* IDENTIFIERS */{
 
 <INTEGER: (<DIGIT>)+>
 | <ID: <LETTER> (<LETTER> | <DIGIT>)*>
 | <#LETTER: ["$","A"-"Z","_","a"-"z"]>
 | <#DIGIT: ["0"-"9"]>
-| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">}SimpleNode Start() :{}{  Expression() ";"  {    return jjtThis;  }}void Expression() :{}{  AdditiveExpression()}void AdditiveExpression() :{}{  MultiplicativeExpression()  (    (      "+"    | "-"    )    MultiplicativeExpression()  )*}void MultiplicativeExpression() :{}{  UnaryExpression()  (    (      "*"    | "/"    | "%"    )    UnaryExpression()  )*}void UnaryExpression() :{}{  "(" Expression() ")"| Identifier()| Integer()}void Identifier() :{}{  < INTEGER >}void Integer() :{}{  < RELA_OP >}
+| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">}SimpleNode Module(): {}
+{
+	<MODULE> <ID> <LCHAVETA> (Declaration())* (Function())* <RCHAVETA>
+}void Declaration(): {}
+{
+	(ArrayElement() | ScalarElement())
+	(<ASSIGN>(("["ArraySize()"]")
+	|(<ADDSUB_OP>)?	<INTEGER>))? <PVIRG>
+}
+void Function(): {}
+{
+	((<FUNCTION>(ArrayElement()
+				|ScalarElement()) <ASSIGN> <ID> <LPAR> (Varlist())? <RPAR>) 
+	|(<FUNCTION> <ID> <LPAR>(Varlist())? <RPAR>))
+	<LCHAVETA> Stmtlst() <RCHAVETA>
+}
+
+void Varlist(): {}
+{
+	(ArrayElement()
+	|ScalarElement())
+	(<VIRG> (ArrayElement()
+			|ScalarElement()))*
+}
+void ArrayElement(): {}
+{
+	<ID> "[""]"
+}
+void ScalarElement(): {}
+{
+	<ID>
+}
+void Stmtlst(): {}
+{
+	(Stmt())*
+}
+void Stmt(): {}
+{
+	While()
+	|If()
+	|Assign()
+	|Call() <PVIRG>
+}
+void Assign(): {}
+{
+	Lhs() <ASSIGN> Rhs() <PVIRG>
+}
+void Lhs(): {}
+{
+	(ArrayAccess()
+	|ScalarAccess())
+}
+void Rhs(): {}
+{
+	(Term() ((<ARITH_OP>
+			 |<BITWISE_OP>
+			 |<ADDSUB_OP>) Term())?)
+	| "["ArraySize()"]"
+}
+void ArraySize(): {}
+{
+	(ScalarAccess()
+	|<INTEGER>)
+}
+void Term(): {}
+{
+	(<ADDSUB_OP>)? (<INTEGER>
+				   |Call()
+				   |ArrayAccess()
+				   |ScalarAccess())
+}
+
+void While(): {}
+{
+	<WHILE> Exprtest() <LCHAVETA> Stmtlst() <RCHAVETA>
+}
+void If(): {}
+{
+	<IF> Exprtest() <LCHAVETA> Stmtlst() <RCHAVETA> (<ELSE> <LCHAVETA> Stmtlst() <RCHAVETA>)?
+}
+
+void Exprtest(): {}
+{
+	<LPAR> Lhs() <RELA_OP> Rhs() <RPAR>
+}
+void Call(): {}
+{
+	<ID> ("." <ID>)? <LPAR> (ArgumentList())? <RPAR>
+}
+void ArgumentList(): {}
+{
+	Argument() (<VIRG> Argument())*
+}
+void Argument(): {}
+{
+	(<ID>
+	|<STRING>
+	|<INTEGER>)
+}
+void ArrayAccess(): {}
+{
+	<ID> "[" Index() "]"
+}
+
+void ScalarAccess(): {}
+{
+	<ID>
+}
+
+void Index(): {}{   <ID>
+| <INTEGER>
+}
+
+
