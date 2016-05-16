@@ -2,7 +2,8 @@
  * JJTree template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
  */options{  static = true;
   LOOKAHEAD = 2;}PARSER_BEGIN(Grammar)
-public class Grammar{  public static void main(String args [])  {    System.out.println("Reading from standard input...");    System.out.print("Enter an expression like \"1+(2+3)*var;\" :");    new Grammar(System.in);    try    {      SimpleNode n = Grammar.Module();      n.dump("");      System.out.println("Thank you.");    }    catch (Exception e)    {      System.out.println("Oops.");      System.out.println(e.getMessage());    }  }}PARSER_END(Grammar)SKIP :{
+public class Grammar{  public static void main(String args [])  {    System.out.println("Reading from standard input...");    System.out.print("Enter an expression like \"1+(2+3)*var;\" :");    new Grammar(System.in);    try    {
+      SimpleNode n = Grammar.Module();      n.dump("");      System.out.println("Thank you.");    }    catch (Exception e)    {      System.out.println("Oops.");      System.out.println(e.getMessage());    }  }}PARSER_END(Grammar)SKIP :{
 " "
 | "\t"
 | "\n"
@@ -40,6 +41,9 @@ public class Grammar{  public static void main(String args [])  {    System.
 | <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">}SimpleNode Module(): {}
 {
 	<MODULE> <ID> <LCHAVETA> (Declaration())* (Function())* <RCHAVETA>
+	{
+    return jjtThis;
+    }
 }void Declaration(): {}
 {
 	(ArrayElement() | ScalarElement())
