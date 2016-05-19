@@ -3,7 +3,7 @@
  */options{  static = true;
   LOOKAHEAD = 2;}PARSER_BEGIN(Grammar)
 public class Grammar{  public static void main(String args [])  {    System.out.println("Reading from standard input...");    System.out.print("Enter an expression like \"1+(2+3)*var;\" :");    new Grammar(System.in);    try    {
-      SimpleNode n = Grammar.Module();      n.dump("");      System.out.println("Thank you.");    }    catch (Exception e)    {      System.out.println("Oops.");      System.out.println(e.getMessage());    }  }}PARSER_END(Grammar)SKIP :{
+      SimpleNode n = Grammar.Module();      n.dump("");      System.out.println("Accepted.");    }    catch (Exception e)    {      System.out.println("Oops.");      System.out.println(e.getMessage());    }  }}PARSER_END(Grammar)SKIP :{
 " "
 | "\t"
 | "\n"
@@ -44,17 +44,18 @@ public class Grammar{  public static void main(String args [])  {    System.
 	{
     return jjtThis;
     }
-}void Declaration(): {}
+}void Declaration() #declaration: {}
 {
 	(ArrayElement() | ScalarElement())
 	(<ASSIGN>(("["ArraySize()"]")
 	|(<ADDSUB_OP>)?	<INTEGER>))? <PVIRG>
 }
-void Function(): {}
+void Function() #function: {}
 {
 	((<FUNCTION>(ArrayElement()
 				|ScalarElement()) <ASSIGN> <ID> <LPAR> (Varlist())? <RPAR>) 
-	|(<FUNCTION> <ID> <LPAR>(Varlist())? <RPAR>))
+	|
+	(<FUNCTION> <ID> <LPAR>(Varlist())? <RPAR>))
 	<LCHAVETA> Stmtlst() <RCHAVETA>
 }
 
@@ -65,47 +66,47 @@ void Varlist(): {}
 	(<VIRG> (ArrayElement()
 			|ScalarElement()))*
 }
-void ArrayElement(): {}
+void ArrayElement() #_arrayE: {}
 {
 	<ID> "[""]"
 }
-void ScalarElement(): {}
+void ScalarElement() #_scalarE: {}
 {
 	<ID>
 }
-void Stmtlst(): {}
+void Stmtlst() #stmtlst: {}
 {
 	(Stmt())*
 }
-void Stmt(): {}
+void Stmt() #stmt: {}
 {
 	While()
 	|If()
 	|Assign()
 	|Call() <PVIRG>
 }
-void Assign(): {}
+void Assign() #assign: {}
 {
 	Lhs() <ASSIGN> Rhs() <PVIRG>
 }
-void Lhs(): {}
+void Lhs() #void: {}
 {
 	(ArrayAccess()
 	|ScalarAccess())
 }
-void Rhs(): {}
+void Rhs() #void: {}
 {
 	(Term() ((<ARITH_OP>
 			 |<BITWISE_OP>
 			 |<ADDSUB_OP>) Term())?)
 	| "["ArraySize()"]"
 }
-void ArraySize(): {}
+void ArraySize() #aSize: {}
 {
 	(ScalarAccess()
 	|<INTEGER>)
 }
-void Term(): {}
+void Term() #void: {}
 {
 	(<ADDSUB_OP>)? (<INTEGER>
 				   |Call()
@@ -122,36 +123,35 @@ void If(): {}
 	<IF> Exprtest() <LCHAVETA> Stmtlst() <RCHAVETA> (<ELSE> <LCHAVETA> Stmtlst() <RCHAVETA>)?
 }
 
-void Exprtest(): {}
+void Exprtest() #void: {}
 {
 	<LPAR> Lhs() <RELA_OP> Rhs() <RPAR>
 }
-void Call(): {}
+void Call() #void: {}
 {
 	<ID> ("." <ID>)? <LPAR> (ArgumentList())? <RPAR>
 }
-void ArgumentList(): {}
+void ArgumentList() #void: {}
 {
 	Argument() (<VIRG> Argument())*
 }
-void Argument(): {}
+void Argument() #void: {}
 {
 	(<ID>
 	|<STRING>
 	|<INTEGER>)
 }
-void ArrayAccess(): {}
+void ArrayAccess() #void: {}
 {
 	<ID> "[" Index() "]"
 }
 
-void ScalarAccess(): {}
+void ScalarAccess() #void: {}
 {
 	<ID>
 }
 
-void Index(): {}{   <ID>
-| <INTEGER>
+void Index() #void: {}{   <ID> | <INTEGER>
 }
 
 
