@@ -1,9 +1,34 @@
 /**
  * JJTree template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
  */options{  static = true;
-  LOOKAHEAD = 2;}PARSER_BEGIN(Grammar)
-public class Grammar{  public static void main(String args [])  {    System.out.println("Reading from standard input...");    System.out.print("Enter an expression like \"1+(2+3)*var;\" :");    new Grammar(System.in);    try    {
-      SimpleNode n = Grammar.Module();      n.dump("");      System.out.println("Accepted.");    }    catch (Exception e)    {      System.out.println("Oops.");      System.out.println(e.getMessage());    }  }}PARSER_END(Grammar)SKIP :{
+  LOOKAHEAD = 2;}PARSER_BEGIN(Grammar)import java.util.HashMap;
+import java.lang.*; 
+import java.util.*; 
+
+public class Grammar{
+
+  static HashMap<String, Map<String, Integer > > myMap = new HashMap<String, Map<String, Integer > >();
+
+    public static void main(String args [])  {    System.out.println("Reading from standard input...");    System.out.print("Enter an expression like \"1+(2+3)*var;\" :");        try    {    
+	  Grammar myYal = new Grammar(System.in);      SimpleNode root = myYal.Module();      root.dump("");      System.out.println("Accepted." + myYal.eval(root));    }    catch (Exception e)    {      System.out.println("Oops.");      System.out.println(e.getMessage());    }  }
+
+  int eval(SimpleNode node)
+  {
+    if (node.jjtGetNumChildren() == 0)  // leaf node with integer value
+    return node.val;
+    else if (node.jjtGetNumChildren() == 1)  // only one child
+    return this.eval((SimpleNode) node.jjtGetChild(0));
+    SimpleNode lhs = (SimpleNode) node.jjtGetChild(0); //left child
+    SimpleNode rhs = (SimpleNode) node.jjtGetChild(1); // right child
+    switch (node.id)
+    {
+      case GrammarTreeConstants.JJTMODULE : System.out.println(".class public ");
+      default : // abort
+      System.out.println("Operador ilegal!");
+      System.exit(1);
+    }
+    return 0;
+  }}PARSER_END(Grammar)SKIP :{
 " "
 | "\t"
 | "\n"
@@ -38,9 +63,15 @@ public class Grammar{  public static void main(String args [])  {    System.
 | <ID: <LETTER> (<LETTER> | <DIGIT>)*>
 | <#LETTER: ["$","A"-"Z","_","a"-"z"]>
 | <#DIGIT: ["0"-"9"]>
-| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">}SimpleNode Module(): {}
+| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">}SimpleNode Module(): {Token t1;}
 {
-	<MODULE> <ID> <LCHAVETA> (Declaration())* (Function())* <RCHAVETA>
+	<MODULE> t1=<ID>	/*{
+	  System.out.println("Nome: "+ t1.image);	}
+	{
+      myMap.put(t1.image);
+ 	}*/
+
+	 <LCHAVETA> (Declaration())* (Function())* <RCHAVETA>
 	{
     return jjtThis;
     }
@@ -141,7 +172,7 @@ void Argument() #void: {}
 	|<STRING>
 	|<INTEGER>)
 }
-void ArrayAccess() #void: {}
+void ArrayAccess() #AA: {}
 {
 	<ID> "[" Index() "]"
 }
@@ -151,7 +182,12 @@ void ScalarAccess() #void: {}
 	<ID>
 }
 
-void Index() #void: {}{   <ID> | <INTEGER>
+void Index() #void: { Token t;}{   <ID> |
+
+   t = <INTEGER>
+   {
+    jjtThis.val = Integer.parseInt(t.image);
+   }#Inteiro
 }
 
 
