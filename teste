@@ -1,0 +1,5 @@
+.class public nome
+.super java/lang/Object
+.field static cenasI = 2
+return
+.end method

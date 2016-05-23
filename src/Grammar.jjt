@@ -1,3 +1,4 @@
+
 /**
  * JJTree template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
  */options{  static = true;
@@ -6,11 +7,20 @@ import java.lang.*;
 import java.util.*; 
 
 public class Grammar{
-
-  static HashMap<String, Map<String, Integer > > myMap = new HashMap<String, Map<String, Integer > >();
-
-    public static void main(String args [])  {    System.out.println("Reading from standard input...");    System.out.print("Enter an expression like \"1+(2+3)*var;\" :");        try    {    
-	  Grammar myYal = new Grammar(System.in);      SimpleNode root = myYal.Module();      root.dump("");      System.out.println("Accepted." + myYal.eval(root));    }    catch (Exception e)    {      System.out.println("Oops.");      System.out.println(e.getMessage());    }  }
+    //local vars->params function-> global vars
+	HashMap<String,Object> localVars=new HashMap<String,Object>();
+	HashMap<String,Object> funcParams=new HashMap<String,Object>();
+	HashMap<String,Object> globalVars=new HashMap<String,Object>();
+	
+  public static void main(String args [])  {    System.out.println("Reading from standard input...");    System.out.print("Enter an expression:");        try    {    
+	  Grammar myYal = new Grammar(System.in);      SimpleNode root = myYal.Module();
+      System.out.println(root.parent);      root.dump("");      System.out.println("Accepted." + myYal.eval(root));
+      
+      JVCgenerator g1=new JVCgenerator("teste");
+      g1.addModule("nomeModulo");
+      g1.addVar("variavel","2");
+      g1.closeWriter();
+          }    catch (Exception e)    {      System.out.println("Error.");      System.out.println(e.getMessage());    }  }
 
   int eval(SimpleNode node)
   {
@@ -104,6 +114,7 @@ void ArrayElement() #_arrayE: {}
 void ScalarElement() #_scalarE: {}
 {
 	<ID>
+	
 }
 void Stmtlst() #stmtlst: {}
 {
