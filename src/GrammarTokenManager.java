@@ -2,6 +2,7 @@
 import java.util.HashMap;
 import java.lang.*;
 import java.util.*;
+import java.io.File;
 
 /** Token Manager. */
 public class GrammarTokenManager implements GrammarConstants
