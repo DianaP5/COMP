@@ -6,6 +6,10 @@
 import java.lang.*; 
 import java.util.*;
 import java.io.File; 
+import java.io.FileInputStream;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
 
 public class Grammar{
     /*local vars-> params function-> global vars*/
@@ -17,18 +21,31 @@ public class Grammar{
 	private static int i=0, j=0, aux=0, k=0, g=0, aux1=0, flag=0, flagArrSize=0, flagt1, flagt2;
 	private static String globalSignal, filename;
 	private static File teste;
+
+	private static Boolean globalVar=false;
+	
 	/** ArrayList arr. */
 	private static ArrayList<String> arr; 
 	
-  public static void main(String args [])  {    System.out.println("Reading from standard input...");    System.out.print("Enter an expression:");        try    {    
-	  Grammar myYal = new Grammar(System.in);      SimpleNode root = myYal.Module();
-      System.out.println(root.parent);      root.dump("");      System.out.println("Accepted." + myYal.eval(root));
+  public static void main(String args []) throws FileNotFoundException  {
+    	File f1 = new File("examples/teste.txt");
+		if(f1.exists())
+		{
+		  FileInputStream s1=new FileInputStream(f1);
+		 	System.out.println("Reading file...");
+		}
+		else System.out.println("Ficheiro não existente");
+    try    {
+      BufferedReader stream =  new BufferedReader(new FileReader(f1));
+	  Grammar myYal = new Grammar(stream);
+	        SimpleNode root = myYal.Module();
+      System.out.println(root.parent);      root.dump("");      System.out.println("Accepted. " + myYal.eval(root));
       
       JVCgenerator g1=new JVCgenerator("teste");
       g1.addModule("nomeModulo");
       g1.addVar("variavel","2");
       g1.closeWriter();
-          }    catch (Exception e)    {      System.out.println("Error.");      System.out.println(e.getMessage());    }  }
+          }    catch (Exception e)    {      System.out.println("Error!");      System.out.println(e.getMessage());    }  }
 
   int eval(SimpleNode node)
   {
@@ -83,7 +100,10 @@ public class Grammar{
 | <#DIGIT: ["0"-"9"]>
 | <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">}SimpleNode Module(): {Token t1;}
 {
-	<MODULE> t1=<ID>  {jjtThis.module = (String) t1.image;} #ID
+	<MODULE> t1=<ID>  {
+	  jjtThis.module = (String) t1.image;
+		System.out.println(t1.image);
+	  } #ID
 	 <LCHAVETA> (Declaration() #Declaration)* (Function() #Function)* <RCHAVETA>
 	{
     return jjtThis;
@@ -99,15 +119,18 @@ public class Grammar{
 		{ i = 1;}
 		)
 	|
-	( (t1 = <ADDSUB_OP>)	{jjtThis.val2 = (String) t1.image; globalSignal = (String) t1.image;} #AddSubOP
+	( (t1 = <ADDSUB_OP>)	{
+	 
+	  jjtThis.val2 = (String) t1.image; globalSignal = (String) t1.image;} #AddSubOP
 	)?
-	(  t2 = <INTEGER>	{jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image);}#Inteiro)
+	(  t2 = <INTEGER>	{System.out.println("num: "+Integer.parseInt((String) t2.image));
+	/*jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image)*/;}#Inteiro)
 	)
 	)?
 	<PVIRG>
 
 	{
-	  	if(i==0)
+	  	//if(i==0)
 	  		//globalVars.put(declaration.toLowerCase(),"Scalar");
 	  	//else
 	  		//globalVars.put(declaration.toLowerCase(),"ScalarArray");
@@ -118,12 +141,13 @@ public class Grammar{
 //COMPLETAR
 void Function() #function: {}
 {
-	((<FUNCTION>(ArrayElement() #Array
+	(LOOKAHEAD(3) (<FUNCTION>(ArrayElement() #Array
 				|ScalarElement() #Scalar) <ASSIGN> <ID> <LPAR> (Varlist() #VarList)? <RPAR>) 
 	|
 	(<FUNCTION> <ID> <LPAR>(Varlist() #VarList)? <RPAR>))
 	<LCHAVETA> Stmtlst()  #StmtLst<RCHAVETA>
 }
+
 
 void Varlist() #void: {}
 {
@@ -132,16 +156,23 @@ void Varlist() #void: {}
 	(<VIRG> (ArrayElement() #Array
 			|ScalarElement() #Scalar))*
 }
+
 void ArrayElement() #void: {Token t1;}
 {
-	(  t1 =	<ID>  {jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;} #ID) 
+	(  t1 =	<ID>  {
+	  System.out.println("ARRAY: "+(String) t1.image);
+	  jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;} #ID) 
   ( "[" "]"
   { i=1; }
-  )?
+  )
 }
+
 void ScalarElement() #void: {Token t1;}
 {
-	(  t1 =	<ID>  {jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;} #ID) 
+	(  t1 =	<ID>  {
+
+	  System.out.println("ID : "+(String) t1.image);
+	  jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;} #ID) 
 	
 }
 void Stmtlst() #void: {}

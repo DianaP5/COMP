@@ -1,0 +1,12 @@
+module fields {
+ab=3;
+
+function m=ffff(){
+c=3;
+}
+
+function ffff(){
+c=3;
+}
+
+}

@@ -3,6 +3,10 @@ import java.util.HashMap;
 import java.lang.*;
 import java.util.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
 
 /** Token Manager. */
 public class GrammarTokenManager implements GrammarConstants
