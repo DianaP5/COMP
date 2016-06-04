@@ -20,7 +20,9 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants/*@egen*/{/
 	private static HashMap<String,Object> localVars=new HashMap<String,Object>();
 	private static HashMap<String,Object> funcParams=new HashMap<String,Object>();
 	private static HashMap<String,Object> globalVars=new HashMap<String,Object>();
-
+	private static HashMap<String,Object> funcReturn=new HashMap<String,Object>();
+	private static HashMap<String,String> functions=new HashMap<String,String>();
+	
 	private static ArrayList<String> order = new ArrayList<String>();
 	
 	private static String ret, declaration, funcName, LocalVar, numFunc, numFunc2, name_f2, name_f1, ReturnVar, string_aux2;
@@ -51,9 +53,9 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants/*@egen*/{/
 /* TESTING
       for (int i=0; i < order.size(); i++)
       	System.out.println("ORDER: "+order.get(i));
-*/
-		System.out.println("ISTO: "+globalVars.get("c").getValue());
 
+		System.out.println("ISTO: "+globalVars.get("c").getValue());
+*/
 
       System.out.println("Accepted. " + myYal.eval(root));
       
@@ -231,7 +233,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants/*@egen*/{/
           }
         }
 /*@egen*/
-}void Declaration()      : {Token t1, t2;}
+}//sums and subsvoid Declaration()      : {Token t1, t2;}
 {
 	(/*@bgen(jjtree) Array */
          {
@@ -391,25 +393,24 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants/*@egen*/{/
 	<PVIRG>
 }
 
-//COMPLETAR
 void Function()          : {/*@bgen(jjtree) function */
-  SimpleNode jjtn000 = new SimpleNode(JJTFUNCTION);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-/*@egen*/}
+                            SimpleNode jjtn000 = new SimpleNode(JJTFUNCTION);
+                            boolean jjtc000 = true;
+                            jjtree.openNodeScope(jjtn000);
+/*@egen*/Token t1;}
 {/*@bgen(jjtree) function */
   try {
 /*@egen*/
   {    	globalVar=false;
   }
-	(LOOKAHEAD(3) (<FUNCTION>(/*@bgen(jjtree) Array */
+	(LOOKAHEAD(3) (<FUNCTION>(/*@bgen(jjtree) funcReturn */
                                   {
-                                    SimpleNode jjtn001 = new SimpleNode(JJTARRAY);
+                                    SimpleNode jjtn001 = new SimpleNode(JJTFUNCRETURN);
                                     boolean jjtc001 = true;
                                     jjtree.openNodeScope(jjtn001);
                                   }
                                   try {
-/*@egen*/ArrayElement()/*@bgen(jjtree)*/
+/*@egen*/functionReturn()/*@bgen(jjtree)*/
                                   } catch (Throwable jjte001) {
                                     if (jjtc001) {
                                       jjtree.clearNodeScope(jjtn001);
@@ -429,116 +430,123 @@ void Function()          : {/*@bgen(jjtree) function */
                                       jjtree.closeNodeScope(jjtn001, true);
                                     }
                                   }
-/*@egen*/       
-				|/*@bgen(jjtree) Scalar */
-                                 {
-                                   SimpleNode jjtn002 = new SimpleNode(JJTSCALAR);
-                                   boolean jjtc002 = true;
-                                   jjtree.openNodeScope(jjtn002);
-                                 }
-                                 try {
-/*@egen*/ScalarElement()/*@bgen(jjtree)*/
-                                 } catch (Throwable jjte002) {
-                                   if (jjtc002) {
-                                     jjtree.clearNodeScope(jjtn002);
-                                     jjtc002 = false;
-                                   } else {
-                                     jjtree.popNode();
-                                   }
-                                   if (jjte002 instanceof RuntimeException) {
-                                     throw (RuntimeException)jjte002;
-                                   }
-                                   if (jjte002 instanceof ParseException) {
-                                     throw (ParseException)jjte002;
-                                   }
-                                   throw (Error)jjte002;
-                                 } finally {
-                                   if (jjtc002) {
-                                     jjtree.closeNodeScope(jjtn002, true);
-                                   }
-                                 }
-/*@egen*/        ) <ASSIGN> <ID> <LPAR> (/*@bgen(jjtree) VarList */
-                                                                                {
-                                                                                  SimpleNode jjtn003 = new SimpleNode(JJTVARLIST);
-                                                                                  boolean jjtc003 = true;
-                                                                                  jjtree.openNodeScope(jjtn003);
-                                                                                }
-                                                                                try {
+/*@egen*/            ) <ASSIGN> t1=<ID>	{
+	  	if (!functions.containsKey((String) t1.image))
+		    {
+		      String lastReturn=order.get(order.size()-1);
+			  String returnName=funcReturn.get(lastReturn).getName();
+			  
+		      functions.put((String) t1.image,returnName);
+		      order.add((String) t1.image);
+		  }else
+		  {
+		     error=true;
+		     errorMessage="Functions with same name: "+(String) t1.image;
+		     System.out.println("ERROR: "+errorMessage);
+		     System.exit(1);
+		   }
+		   		System.out.println("func assign id: "+(String) t1.image);
+	}
+	 <LPAR> (/*@bgen(jjtree) VarList */
+                 {
+                   SimpleNode jjtn002 = new SimpleNode(JJTVARLIST);
+                   boolean jjtc002 = true;
+                   jjtree.openNodeScope(jjtn002);
+                 }
+                 try {
 /*@egen*/Varlist()/*@bgen(jjtree)*/
-                                                                                } catch (Throwable jjte003) {
-                                                                                  if (jjtc003) {
-                                                                                    jjtree.clearNodeScope(jjtn003);
-                                                                                    jjtc003 = false;
-                                                                                  } else {
-                                                                                    jjtree.popNode();
-                                                                                  }
-                                                                                  if (jjte003 instanceof RuntimeException) {
-                                                                                    throw (RuntimeException)jjte003;
-                                                                                  }
-                                                                                  if (jjte003 instanceof ParseException) {
-                                                                                    throw (ParseException)jjte003;
-                                                                                  }
-                                                                                  throw (Error)jjte003;
-                                                                                } finally {
-                                                                                  if (jjtc003) {
-                                                                                    jjtree.closeNodeScope(jjtn003, true);
-                                                                                  }
-                                                                                }
+                 } catch (Throwable jjte002) {
+                   if (jjtc002) {
+                     jjtree.clearNodeScope(jjtn002);
+                     jjtc002 = false;
+                   } else {
+                     jjtree.popNode();
+                   }
+                   if (jjte002 instanceof RuntimeException) {
+                     throw (RuntimeException)jjte002;
+                   }
+                   if (jjte002 instanceof ParseException) {
+                     throw (ParseException)jjte002;
+                   }
+                   throw (Error)jjte002;
+                 } finally {
+                   if (jjtc002) {
+                     jjtree.closeNodeScope(jjtn002, true);
+                   }
+                 }
 /*@egen*/         )? <RPAR>) 
 	|
-	(<FUNCTION> <ID> <LPAR>(/*@bgen(jjtree) VarList */
-                                {
-                                  SimpleNode jjtn004 = new SimpleNode(JJTVARLIST);
-                                  boolean jjtc004 = true;
-                                  jjtree.openNodeScope(jjtn004);
-                                }
-                                try {
+	(<FUNCTION> t1=<ID>
+	{
+	  if (!functions.containsKey((String) t1.image))
+		    {
+		      String lastReturn=order.get(order.size()-1);
+			  
+		      functions.put((String) t1.image,"null");
+		      order.add((String) t1.image);
+		  }else
+		  {
+		     error=true;
+		     errorMessage="Functions with same name: "+(String) t1.image;
+		     System.out.println("ERROR: "+errorMessage);
+		     System.exit(1);
+		   }
+		   
+		System.out.println("func id: "+(String) t1.image);
+	}
+	<LPAR>(/*@bgen(jjtree) VarList */
+               {
+                 SimpleNode jjtn003 = new SimpleNode(JJTVARLIST);
+                 boolean jjtc003 = true;
+                 jjtree.openNodeScope(jjtn003);
+               }
+               try {
 /*@egen*/Varlist()/*@bgen(jjtree)*/
-                                } catch (Throwable jjte004) {
-                                  if (jjtc004) {
-                                    jjtree.clearNodeScope(jjtn004);
-                                    jjtc004 = false;
-                                  } else {
-                                    jjtree.popNode();
-                                  }
-                                  if (jjte004 instanceof RuntimeException) {
-                                    throw (RuntimeException)jjte004;
-                                  }
-                                  if (jjte004 instanceof ParseException) {
-                                    throw (ParseException)jjte004;
-                                  }
-                                  throw (Error)jjte004;
-                                } finally {
-                                  if (jjtc004) {
-                                    jjtree.closeNodeScope(jjtn004, true);
-                                  }
-                                }
+               } catch (Throwable jjte003) {
+                 if (jjtc003) {
+                   jjtree.clearNodeScope(jjtn003);
+                   jjtc003 = false;
+                 } else {
+                   jjtree.popNode();
+                 }
+                 if (jjte003 instanceof RuntimeException) {
+                   throw (RuntimeException)jjte003;
+                 }
+                 if (jjte003 instanceof ParseException) {
+                   throw (ParseException)jjte003;
+                 }
+                 throw (Error)jjte003;
+               } finally {
+                 if (jjtc003) {
+                   jjtree.closeNodeScope(jjtn003, true);
+                 }
+               }
 /*@egen*/         )? <RPAR>))
 	<LCHAVETA>/*@bgen(jjtree) StmtLst */
                    {
-                     SimpleNode jjtn005 = new SimpleNode(JJTSTMTLST);
-                     boolean jjtc005 = true;
-                     jjtree.openNodeScope(jjtn005);
+                     SimpleNode jjtn004 = new SimpleNode(JJTSTMTLST);
+                     boolean jjtc004 = true;
+                     jjtree.openNodeScope(jjtn004);
                    }
                    try {
 /*@egen*/ Stmtlst()/*@bgen(jjtree)*/
-                   } catch (Throwable jjte005) {
-                     if (jjtc005) {
-                       jjtree.clearNodeScope(jjtn005);
-                       jjtc005 = false;
+                   } catch (Throwable jjte004) {
+                     if (jjtc004) {
+                       jjtree.clearNodeScope(jjtn004);
+                       jjtc004 = false;
                      } else {
                        jjtree.popNode();
                      }
-                     if (jjte005 instanceof RuntimeException) {
-                       throw (RuntimeException)jjte005;
+                     if (jjte004 instanceof RuntimeException) {
+                       throw (RuntimeException)jjte004;
                      }
-                     if (jjte005 instanceof ParseException) {
-                       throw (ParseException)jjte005;
+                     if (jjte004 instanceof ParseException) {
+                       throw (ParseException)jjte004;
                      }
-                     throw (Error)jjte005;
+                     throw (Error)jjte004;
                    } finally {
-                     if (jjtc005) {
-                       jjtree.closeNodeScope(jjtn005, true);
+                     if (jjtc004) {
+                       jjtree.closeNodeScope(jjtn004, true);
                      }
                    }
 /*@egen*/          <RCHAVETA>/*@bgen(jjtree)*/
@@ -562,6 +570,61 @@ void Function()          : {/*@bgen(jjtree) function */
     }
   }
 /*@egen*/
+}
+
+void functionReturn()       : {Token t1;}
+{
+ (  t1 =	<ID>/*@bgen(jjtree) ID */
+                      {
+                        SimpleNode jjtn001 = new SimpleNode(JJTID);
+                        boolean jjtc001 = true;
+                        jjtree.openNodeScope(jjtn001);
+                      }
+                      try {
+/*@egen*//*@bgen(jjtree)*/
+                      {
+                        jjtree.closeNodeScope(jjtn001, true);
+                        jjtc001 = false;
+                      }
+/*@egen*/  {
+	System.out.println("Func return id: "+(String) t1.image);
+   //jjtThis.nameF = (String) t1.image; name_f1 = (String) t1.image;
+
+	if (!funcReturn.containsKey((String) t1.image))
+		    {
+		      
+		   	 Object ob1=new Object((String) t1.image,"scalar",null);
+		    
+		    funcReturn.put((String) t1.image,ob1);
+		    order.add((String) t1.image);
+		  }else
+		  {
+		     error=true;
+		     errorMessage="Function: Return var with same id: "+(String) t1.image;
+		     System.out.println("ERROR: "+errorMessage);
+		     System.exit(1);
+		   }
+		   
+   }/*@bgen(jjtree)*/
+                      } finally {
+                        if (jjtc001) {
+                          jjtree.closeNodeScope(jjtn001, true);
+                        }
+                      }
+/*@egen*/    ) 
+  ( "[" "]"
+  {
+		  
+			String lastReturn=order.get(order.size()-1);
+			Object ob1=funcReturn.get(lastReturn);
+
+			ob1.setType("array");
+			
+			funcReturn.put(lastReturn,ob1);	
+		
+   			System.out.println("Func return type: ARRAY");
+     }
+  )?
 }
 
 
@@ -706,6 +769,8 @@ void ArrayElement()      : {Token t1;}
 		    order.add((String) t1.image);
 		  }else		  {		     error=true;
 		     errorMessage="Array: Global var with same name: "+(String) t1.image;
+		     System.out.println("ERROR: "+errorMessage);
+		     System.exit(1);
 		   }
 		  }
 		  
@@ -752,6 +817,8 @@ void ScalarElement()      : {Token t1;}
 		  {
 		     error=true;
 		     errorMessage="Scalar: Global var with same name: "+(String) t1.image;
+		     System.out.println("ERROR: "+errorMessage);
+		     System.exit(1);
 		   }
 		  }
 		  
@@ -1958,16 +2025,20 @@ void ScalarAccess()      : {Token t1,t2;}
 		  if (!globalVars.containsKey((String) t1.image))		  {
 		     error=true;
 		     errorMessage="ScalarAccess: Invalid var.size: "+(String) t1.image;
+		     System.out.println("ERROR: "+errorMessage);
+		     System.exit(1);
 		   }
 		  
 			String lastGlobal=order.get(order.size()-1);
 			Object ob1=globalVars.get((String) t1.image);
 			Object ob2=globalVars.get(lastGlobal);
 
-			if (ob1.getValue() == "null")
+			if (ob1.getValue().equals("null"))
 		  	{
 		     error=true;
 		     errorMessage="ScalarAccess: Invalid var.size: "+(String) t1.image+"."+ob1.getValue();
+		     System.out.println("ERROR: "+errorMessage);
+		     System.exit(1);
 		   	}
 		   
 			ob2.setValue(ob1.getValue());

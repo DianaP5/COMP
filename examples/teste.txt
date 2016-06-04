@@ -4,6 +4,14 @@ b=43;
 a=[7];
 c=[a.size];
 
+function z(){
+c=3;
+}
+
+function y[]=a(){
+c=3;
+}
+
 function ffff(){
 c=3;
 }

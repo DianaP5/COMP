@@ -9,6 +9,7 @@ public class Object {
 		this.setName(name);
 		this.setType(type);
 		this.setValue(value);
+		this.setOperator("null");
 	}
 	public String getType() {
 		return type;
