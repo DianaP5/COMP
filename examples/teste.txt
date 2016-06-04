@@ -1,18 +1,15 @@
 module fields {
-ab=3;
+ab;
 b=43;
 a=[7];
 c=[a.size];
+ab=9;
 
-function z(){
+function z(a,b){
 c=3;
 }
 
-function y[]=a(){
-c=3;
-}
-
-function ffff(){
+function y[]=a(f,b){
 c=3;
 }
 
