@@ -1,6 +1,8 @@
 module fields {
 ab=3;
 b=43;
+a=[7];
+c=[a.size];
 
 function ffff(){
 c=3;

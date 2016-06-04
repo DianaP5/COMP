@@ -51,10 +51,10 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants/*@egen*/{/
 /* TESTING
       for (int i=0; i < order.size(); i++)
       	System.out.println("ORDER: "+order.get(i));
-
-		System.out.println("ISTO: "+globalVars.get("ab").getValue());
-
 */
+		System.out.println("ISTO: "+globalVars.get("c").getValue());
+
+
       System.out.println("Accepted. " + myYal.eval(root));
       
       JVCgenerator g1=new JVCgenerator("teste");
@@ -1222,7 +1222,6 @@ void ArraySize()       : {/*@bgen(jjtree) aSize */
 {/*@bgen(jjtree) aSize */
         try {
 /*@egen*/
-  //WHAT IS ScalarAccess?
 	(	  (/*@bgen(jjtree) ScalarAccess */
            {
              SimpleNode jjtn001 = new SimpleNode(JJTSCALARACCESS);
@@ -1936,28 +1935,57 @@ void ArrayAccess()      : {}
 /*@egen*/        "]"
 }
 
-void ScalarAccess()      : {Token t1;}
+void ScalarAccess()      : {Token t1,t2;}
 {
-	<ID> ( "." (t1 = <SIZE>/*@bgen(jjtree) size */
-                                {
-                                  SimpleNode jjtn001 = new SimpleNode(JJTSIZE);
-                                  boolean jjtc001 = true;
-                                  jjtree.openNodeScope(jjtn001);
-                                }
-                                try {
+	t1=<ID> ( "." (t2 = <SIZE>/*@bgen(jjtree) size */
+                                   {
+                                     SimpleNode jjtn001 = new SimpleNode(JJTSIZE);
+                                     boolean jjtc001 = true;
+                                     jjtree.openNodeScope(jjtn001);
+                                   }
+                                   try {
 /*@egen*//*@bgen(jjtree)*/
-                                {
-                                  jjtree.closeNodeScope(jjtn001, true);
-                                  jjtc001 = false;
-                                }
-/*@egen*/ {jjtn001.ScalarA = (String) t1.image; }/*@bgen(jjtree)*/
-                                } finally {
-                                  if (jjtc001) {
-                                    jjtree.closeNodeScope(jjtn001, true);
-                                  }
-                                }
-/*@egen*/      ) )?
+                                   {
+                                     jjtree.closeNodeScope(jjtn001, true);
+                                     jjtc001 = false;
+                                   }
+/*@egen*/ {
 
+		System.out.println("scalarAccess id: "+(String) t1.image);	  
+
+		if (globalVar == true)
+		{
+		  if (!globalVars.containsKey((String) t1.image))		  {
+		     error=true;
+		     errorMessage="ScalarAccess: Invalid var.size: "+(String) t1.image;
+		   }
+		  
+			String lastGlobal=order.get(order.size()-1);
+			Object ob1=globalVars.get((String) t1.image);
+			Object ob2=globalVars.get(lastGlobal);
+
+			if (ob1.getValue() == "null")
+		  	{
+		     error=true;
+		     errorMessage="ScalarAccess: Invalid var.size: "+(String) t1.image+"."+ob1.getValue();
+		   	}
+		   
+			ob2.setValue(ob1.getValue());
+			
+			globalVars.put(lastGlobal,ob2);	
+		}
+		
+	//  jjtThis.ScalarA = (String) t1.image;
+
+	  }/*@bgen(jjtree)*/
+                                   } finally {
+                                     if (jjtc001) {
+                                       jjtree.closeNodeScope(jjtn001, true);
+                                     }
+                                   }
+/*@egen*/      ) )?
+	
+		
 }
 
 void Index()      : { Token t1;}{   ( t1 = <ID>/*@bgen(jjtree) ID */
