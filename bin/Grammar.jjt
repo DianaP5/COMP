@@ -17,12 +17,15 @@ public class Grammar{
 	private static HashMap<String,Object> funcParams=new HashMap<String,Object>();
 	private static HashMap<String,Object> globalVars=new HashMap<String,Object>();
 
+	private static ArrayList<String> order = new ArrayList<String>();
+	
 	private static String ret, declaration, funcName, LocalVar, numFunc, numFunc2, name_f2, name_f1, ReturnVar, string_aux2;
 	private static int i=0, j=0, aux=0, k=0, g=0, aux1=0, flag=0, flagArrSize=0, flagt1, flagt2;
 	private static String globalSignal, filename;
 	private static File teste;
 
-	private static Boolean globalVar=false;
+	private static Boolean globalVar=false, error=false;
+	private static String errorMessage="";
 	
 	/** ArrayList arr. */
 	private static ArrayList<String> arr; 
@@ -34,18 +37,27 @@ public class Grammar{
 		  FileInputStream s1=new FileInputStream(f1);
 		 	System.out.println("Reading file...");
 		}
-		else System.out.println("Ficheiro não existente");
+		else System.out.println("File not found.");
     try    {
       BufferedReader stream =  new BufferedReader(new FileReader(f1));
 	  Grammar myYal = new Grammar(stream);
 	        SimpleNode root = myYal.Module();
-      System.out.println(root.parent);      root.dump("");      System.out.println("Accepted. " + myYal.eval(root));
+      root.dump("");
+
+/* TESTING
+      for (int i=0; i < order.size(); i++)
+      	System.out.println("ORDER: "+order.get(i));
+
+		System.out.println("ISTO: "+globalVars.get("ab").getValue());
+
+*/
+      System.out.println("Accepted. " + myYal.eval(root));
       
       JVCgenerator g1=new JVCgenerator("teste");
       g1.addModule("nomeModulo");
       g1.addVar("variavel","2");
       g1.closeWriter();
-          }    catch (Exception e)    {      System.out.println("Error!");      System.out.println(e.getMessage());    }  }
+          }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: "+e.getMessage());    }  }
 
   int eval(SimpleNode node)
   {
@@ -57,7 +69,10 @@ public class Grammar{
     SimpleNode rhs = (SimpleNode) node.jjtGetChild(1); // right child
     switch (node.id)
     {
-      case GrammarTreeConstants.JJTMODULE : System.out.println(".class public ");
+      case GrammarTreeConstants.JJTMODULE :
+      //PORQUE?
+      System.out.println(".class public ");
+      break;
       default : // abort
       System.out.println("Operador ilegal!");
       System.exit(1);
@@ -102,7 +117,8 @@ public class Grammar{
 {
 	<MODULE> t1=<ID>  {
 	  jjtThis.module = (String) t1.image;
-		System.out.println(t1.image);
+		System.out.println("MODULE: "+t1.image);
+		globalVar=true;
 	  } #ID
 	 <LCHAVETA> (Declaration() #Declaration)* (Function() #Function)* <RCHAVETA>
 	{
@@ -116,31 +132,46 @@ public class Grammar{
 	( ( "["
 	  ArraySize() 	#ARRAYSIZE
 		"]"
-		{ i = 1;}
 		)
 	|
 	( (t1 = <ADDSUB_OP>)	{
-	 
-	  jjtThis.val2 = (String) t1.image; globalSignal = (String) t1.image;} #AddSubOP
+
+		if (globalVar == true)
+		{ 
+			String lastGlobal=order.get(order.size()-1);
+			Object ob1=globalVars.get(lastGlobal);
+			ob1.setOperator((String) t1.image);
+			globalVars.put(lastGlobal,ob1);	
+		}
+
+		System.out.println("operator: "+(String) t1.image);
+		
+	 // jjtThis.val2 = (String) t1.image; globalSignal = (String) t1.image;
+	 } #AddSubOP
 	)?
-	(  t2 = <INTEGER>	{System.out.println("num: "+Integer.parseInt((String) t2.image));
-	/*jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image)*/;}#Inteiro)
+	(  t2 = <INTEGER>	{
+		if (globalVar == true)
+		{ 
+			String lastGlobal=order.get(order.size()-1);
+			Object ob1=globalVars.get(lastGlobal);
+			if (ob1.getOperator() == "-")
+				ob1.setValue("-"+(String) t2.image);
+			else ob1.setValue((String) t2.image);
+			globalVars.put(lastGlobal,ob1);	
+		}
+	  System.out.println("Value: "+Integer.parseInt((String) t2.image));
+	/*jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image)*/;
+	}#Inteiro)
 	)
 	)?
 	<PVIRG>
-
-	{
-	  	//if(i==0)
-	  		//globalVars.put(declaration.toLowerCase(),"Scalar");
-	  	//else
-	  		//globalVars.put(declaration.toLowerCase(),"ScalarArray");
-	  	i=0;
-	}
 }
 
 //COMPLETAR
 void Function() #function: {}
 {
+  {    	globalVar=false;
+  }
 	(LOOKAHEAD(3) (<FUNCTION>(ArrayElement() #Array
 				|ScalarElement() #Scalar) <ASSIGN> <ID> <LPAR> (Varlist() #VarList)? <RPAR>) 
 	|
@@ -160,10 +191,23 @@ void Varlist() #void: {}
 void ArrayElement() #void: {Token t1;}
 {
 	(  t1 =	<ID>  {
-	  System.out.println("ARRAY: "+(String) t1.image);
-	  jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;} #ID) 
+
+	  if(globalVar == true)
+		  {
+		    if (!globalVars.containsKey((String) t1.image))		    {		      
+		   	 Object ob1=new Object((String) t1.image,"array",null);
+		    
+		    globalVars.put((String) t1.image,ob1);
+		    order.add((String) t1.image);
+		  }else		  {		     error=true;
+		     errorMessage="Array: Global var with same name: "+(String) t1.image;
+		   }
+		  }
+		  
+	  System.out.println("array id: "+(String) t1.image);
+	  //jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;
+	  } #ID) 
   ( "[" "]"
-  { i=1; }
   )
 }
 
@@ -171,8 +215,26 @@ void ScalarElement() #void: {Token t1;}
 {
 	(  t1 =	<ID>  {
 
-	  System.out.println("ID : "+(String) t1.image);
-	  jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;} #ID) 
+		 if(globalVar == true)
+		  {
+		    if (!globalVars.containsKey((String) t1.image))
+		    {
+		      
+		   	 Object ob1=new Object((String) t1.image,"scalar",null);
+		    
+		    globalVars.put((String) t1.image,ob1);
+		    order.add((String) t1.image);
+		    
+		  	}else
+		  {
+		     error=true;
+		     errorMessage="Scalar: Global var with same name: "+(String) t1.image;
+		   }
+		  }
+		  
+	  System.out.println("Scalar id: "+(String) t1.image);
+	  //jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;
+	  } #ID) 
 	
 }
 void Stmtlst() #void: {}
@@ -221,10 +283,19 @@ void Rhs() #void: {Token t1;}
 
 void ArraySize() #aSize: {Token t1;}
 {
+  //WHAT IS ScalarAccess?
 	(	  (ScalarAccess() #ScalarAccess
-	{
-	  flagArrSize=1;	}
-	)| t1=<INTEGER> {jjtThis.arraysize = Integer.parseInt((String)t1.image); } #Inteiro )
+	)| t1=<INTEGER> {
+	  	if (globalVar == true)
+		{ 
+			String lastGlobal=order.get(order.size()-1);
+			Object ob1=globalVars.get(lastGlobal);
+			ob1.setValue((String) t1.image);
+			globalVars.put(lastGlobal,ob1);	
+		}
+		
+	  System.out.println("array size: "+(String)t1.image);
+	  jjtThis.arraysize = Integer.parseInt((String)t1.image); } #Inteiro )
 }
 
 void Term() #void: {Token t1, t2;}

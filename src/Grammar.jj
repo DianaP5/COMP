@@ -21,12 +21,15 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants/*@egen*/{/
 	private static HashMap<String,Object> funcParams=new HashMap<String,Object>();
 	private static HashMap<String,Object> globalVars=new HashMap<String,Object>();
 
+	private static ArrayList<String> order = new ArrayList<String>();
+	
 	private static String ret, declaration, funcName, LocalVar, numFunc, numFunc2, name_f2, name_f1, ReturnVar, string_aux2;
 	private static int i=0, j=0, aux=0, k=0, g=0, aux1=0, flag=0, flagArrSize=0, flagt1, flagt2;
 	private static String globalSignal, filename;
 	private static File teste;
 
-	private static Boolean globalVar=false;
+	private static Boolean globalVar=false, error=false;
+	private static String errorMessage="";
 	
 	/** ArrayList arr. */
 	private static ArrayList<String> arr; 
@@ -38,18 +41,27 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants/*@egen*/{/
 		  FileInputStream s1=new FileInputStream(f1);
 		 	System.out.println("Reading file...");
 		}
-		else System.out.println("Ficheiro n\u00e3o existente");
+		else System.out.println("File not found.");
     try    {
       BufferedReader stream =  new BufferedReader(new FileReader(f1));
 	  Grammar myYal = new Grammar(stream);
 	        SimpleNode root = myYal.Module();
-      System.out.println(root.parent);      root.dump("");      System.out.println("Accepted. " + myYal.eval(root));
+      root.dump("");
+
+/* TESTING
+      for (int i=0; i < order.size(); i++)
+      	System.out.println("ORDER: "+order.get(i));
+
+		System.out.println("ISTO: "+globalVars.get("ab").getValue());
+
+*/
+      System.out.println("Accepted. " + myYal.eval(root));
       
       JVCgenerator g1=new JVCgenerator("teste");
       g1.addModule("nomeModulo");
       g1.addVar("variavel","2");
       g1.closeWriter();
-          }    catch (Exception e)    {      System.out.println("Error!");      System.out.println(e.getMessage());    }  }
+          }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: "+e.getMessage());    }  }
 
   int eval(SimpleNode node)
   {
@@ -61,7 +73,10 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants/*@egen*/{/
     SimpleNode rhs = (SimpleNode) node.jjtGetChild(1); // right child
     switch (node.id)
     {
-      case GrammarTreeConstants.JJTMODULE : System.out.println(".class public ");
+      case GrammarTreeConstants.JJTMODULE :
+      //PORQUE?
+      System.out.println(".class public ");
+      break;
       default : // abort
       System.out.println("Operador ilegal!");
       System.exit(1);
@@ -124,7 +139,8 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants/*@egen*/{/
                           }
 /*@egen*/  {
 	  jjtn001.module = (String) t1.image;
-		System.out.println(t1.image);
+		System.out.println("MODULE: "+t1.image);
+		globalVar=true;
 	  }/*@bgen(jjtree)*/
                           } finally {
                             if (jjtc001) {
@@ -304,7 +320,6 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants/*@egen*/{/
           }
 /*@egen*/ 	          
 		"]"
-		{ i = 1;}
 		)
 	|
 	( (t1 = <ADDSUB_OP>)/*@bgen(jjtree) AddSubOP */
@@ -320,8 +335,19 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants/*@egen*/{/
                                   jjtc004 = false;
                                 }
 /*@egen*/	{
-	 
-	  jjtn004.val2 = (String) t1.image; globalSignal = (String) t1.image;}/*@bgen(jjtree)*/
+
+		if (globalVar == true)
+		{ 
+			String lastGlobal=order.get(order.size()-1);
+			Object ob1=globalVars.get(lastGlobal);
+			ob1.setOperator((String) t1.image);
+			globalVars.put(lastGlobal,ob1);	
+		}
+
+		System.out.println("operator: "+(String) t1.image);
+		
+	 // jjtThis.val2 = (String) t1.image; globalSignal = (String) t1.image;
+	 }/*@bgen(jjtree)*/
                                 } finally {
                                   if (jjtc004) {
                                     jjtree.closeNodeScope(jjtn004, true);
@@ -341,8 +367,19 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants/*@egen*/{/
                                   jjtree.closeNodeScope(jjtn005, true);
                                   jjtc005 = false;
                                 }
-/*@egen*/	{System.out.println("num: "+Integer.parseInt((String) t2.image));
-	/*jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image)*/;}/*@bgen(jjtree)*/
+/*@egen*/	{
+		if (globalVar == true)
+		{ 
+			String lastGlobal=order.get(order.size()-1);
+			Object ob1=globalVars.get(lastGlobal);
+			if (ob1.getOperator() == "-")
+				ob1.setValue("-"+(String) t2.image);
+			else ob1.setValue((String) t2.image);
+			globalVars.put(lastGlobal,ob1);	
+		}
+	  System.out.println("Value: "+Integer.parseInt((String) t2.image));
+	/*jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image)*/;
+	}/*@bgen(jjtree)*/
                                 } finally {
                                   if (jjtc005) {
                                     jjtree.closeNodeScope(jjtn005, true);
@@ -352,14 +389,6 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants/*@egen*/{/
 	)
 	)?
 	<PVIRG>
-
-	{
-	  	//if(i==0)
-	  		//globalVars.put(declaration.toLowerCase(),"Scalar");
-	  	//else
-	  		//globalVars.put(declaration.toLowerCase(),"ScalarArray");
-	  	i=0;
-	}
 }
 
 //COMPLETAR
@@ -369,8 +398,10 @@ void Function()          : {/*@bgen(jjtree) function */
   jjtree.openNodeScope(jjtn000);
 /*@egen*/}
 {/*@bgen(jjtree) function */
-        try {
+  try {
 /*@egen*/
+  {    	globalVar=false;
+  }
 	(LOOKAHEAD(3) (<FUNCTION>(/*@bgen(jjtree) Array */
                                   {
                                     SimpleNode jjtn001 = new SimpleNode(JJTARRAY);
@@ -511,25 +542,25 @@ void Function()          : {/*@bgen(jjtree) function */
                      }
                    }
 /*@egen*/          <RCHAVETA>/*@bgen(jjtree)*/
-        } catch (Throwable jjte000) {
-          if (jjtc000) {
-            jjtree.clearNodeScope(jjtn000);
-            jjtc000 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte000 instanceof RuntimeException) {
-            throw (RuntimeException)jjte000;
-          }
-          if (jjte000 instanceof ParseException) {
-            throw (ParseException)jjte000;
-          }
-          throw (Error)jjte000;
-        } finally {
-          if (jjtc000) {
-            jjtree.closeNodeScope(jjtn000, true);
-          }
-        }
+  } catch (Throwable jjte000) {
+    if (jjtc000) {
+      jjtree.clearNodeScope(jjtn000);
+      jjtc000 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte000 instanceof RuntimeException) {
+      throw (RuntimeException)jjte000;
+    }
+    if (jjte000 instanceof ParseException) {
+      throw (ParseException)jjte000;
+    }
+    throw (Error)jjte000;
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+    }
+  }
 /*@egen*/
 }
 
@@ -665,8 +696,22 @@ void ArrayElement()      : {Token t1;}
                         jjtc001 = false;
                       }
 /*@egen*/  {
-	  System.out.println("ARRAY: "+(String) t1.image);
-	  jjtn001.globalVar = (String) t1.image; declaration = (String) t1.image;}/*@bgen(jjtree)*/
+
+	  if(globalVar == true)
+		  {
+		    if (!globalVars.containsKey((String) t1.image))		    {		      
+		   	 Object ob1=new Object((String) t1.image,"array",null);
+		    
+		    globalVars.put((String) t1.image,ob1);
+		    order.add((String) t1.image);
+		  }else		  {		     error=true;
+		     errorMessage="Array: Global var with same name: "+(String) t1.image;
+		   }
+		  }
+		  
+	  System.out.println("array id: "+(String) t1.image);
+	  //jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;
+	  }/*@bgen(jjtree)*/
                       } finally {
                         if (jjtc001) {
                           jjtree.closeNodeScope(jjtn001, true);
@@ -674,7 +719,6 @@ void ArrayElement()      : {Token t1;}
                       }
 /*@egen*/    ) 
   ( "[" "]"
-  { i=1; }
   )
 }
 
@@ -694,8 +738,26 @@ void ScalarElement()      : {Token t1;}
                       }
 /*@egen*/  {
 
-	  System.out.println("ID : "+(String) t1.image);
-	  jjtn001.globalVar = (String) t1.image; declaration = (String) t1.image;}/*@bgen(jjtree)*/
+		 if(globalVar == true)
+		  {
+		    if (!globalVars.containsKey((String) t1.image))
+		    {
+		      
+		   	 Object ob1=new Object((String) t1.image,"scalar",null);
+		    
+		    globalVars.put((String) t1.image,ob1);
+		    order.add((String) t1.image);
+		    
+		  	}else
+		  {
+		     error=true;
+		     errorMessage="Scalar: Global var with same name: "+(String) t1.image;
+		   }
+		  }
+		  
+	  System.out.println("Scalar id: "+(String) t1.image);
+	  //jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;
+	  }/*@bgen(jjtree)*/
                       } finally {
                         if (jjtc001) {
                           jjtree.closeNodeScope(jjtn001, true);
@@ -1160,6 +1222,7 @@ void ArraySize()       : {/*@bgen(jjtree) aSize */
 {/*@bgen(jjtree) aSize */
         try {
 /*@egen*/
+  //WHAT IS ScalarAccess?
 	(	  (/*@bgen(jjtree) ScalarAccess */
            {
              SimpleNode jjtn001 = new SimpleNode(JJTSCALARACCESS);
@@ -1187,14 +1250,7 @@ void ArraySize()       : {/*@bgen(jjtree) aSize */
                jjtree.closeNodeScope(jjtn001, true);
              }
            }
-/*@egen*/              /*@bgen(jjtree)*/
-        {
-          jjtree.closeNodeScope(jjtn000, true);
-          jjtc000 = false;
-        }
-/*@egen*/
-	{
-	  flagArrSize=1;	}
+/*@egen*/              
 	)| t1=<INTEGER>/*@bgen(jjtree) Inteiro */
                         {
                           SimpleNode jjtn002 = new SimpleNode(JJTINTEIRO);
@@ -1207,7 +1263,17 @@ void ArraySize()       : {/*@bgen(jjtree) aSize */
                           jjtree.closeNodeScope(jjtn002, true);
                           jjtc002 = false;
                         }
-/*@egen*/ {jjtn002.arraysize = Integer.parseInt((String)t1.image); }/*@bgen(jjtree)*/
+/*@egen*/ {
+	  	if (globalVar == true)
+		{ 
+			String lastGlobal=order.get(order.size()-1);
+			Object ob1=globalVars.get(lastGlobal);
+			ob1.setValue((String) t1.image);
+			globalVars.put(lastGlobal,ob1);	
+		}
+		
+	  System.out.println("array size: "+(String)t1.image);
+	  jjtn002.arraysize = Integer.parseInt((String)t1.image); }/*@bgen(jjtree)*/
                         } finally {
                           if (jjtc002) {
                             jjtree.closeNodeScope(jjtn002, true);

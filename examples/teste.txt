@@ -1,7 +1,8 @@
 module fields {
 ab=3;
+b=43;
 
-function m=ffff(){
+function ffff(){
 c=3;
 }
 
