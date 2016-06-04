@@ -26,7 +26,7 @@ public class Grammar{
 	private static String globalSignal, filename;
 	private static File teste;
 
-	private static Boolean globalVar=false,funcParam=false, error=false;
+	private static Boolean globalVar=false,funcParam=false,localVar=false, error=false;
 	private static String errorMessage="";
 	
 	/** ArrayList arr. */
@@ -282,9 +282,11 @@ void ArrayElement() #void: {Token t1;}
 		     System.out.println("ERROR: "+errorMessage);
 		     System.exit(1);
 		   }
-		  }else if (funcParam == true)		  {			if (!funcParams.containsKey((String) t1.image))
+		  }else if (funcParam == true)		  {
+		    String lastFunc=order.get(order.size()-1);
+		    			if (!funcParams.containsKey(lastFunc+" "+(String) t1.image))
 		    {
-		      String lastFunc=order.get(order.size()-1);
+		      
 		
 		   	 Object ob1=new Object((String) t1.image,"array",null);
 		    
@@ -337,10 +339,11 @@ void ScalarElement() #void: {Token t1;}
 		 }
 		  }if (funcParam == true)
 		  {
-			if (!funcParams.containsKey((String) t1.image))
+		     String lastFunc=order.get(order.size()-1);
+		     
+			if (!funcParams.containsKey(lastFunc+" "+(String) t1.image))
 		    {
-		      String lastFunc=order.get(order.size()-1);
-		
+		     
 		   	 Object ob1=new Object((String) t1.image,"scalar",null);
 		    
 		    funcParams.put(lastFunc+" "+(String) t1.image,ob1);
@@ -365,6 +368,9 @@ void ScalarElement() #void: {Token t1;}
 
 void Stmtlst() #void: {}
 {
+
+  {	localVar=true;
+  }
 	(Stmt() #Stmt)*
 }
 
