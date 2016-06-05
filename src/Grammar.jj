@@ -9,12 +9,14 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
 /*@egen*/  /*local vars-> params function-> global vars*/  private static HashMap < String, Object > localVars = new HashMap < String, Object > ();  private static HashMap < String, Object > funcParams = new HashMap < String, Object > ();  private static HashMap < String, Object > globalVars = new HashMap < String, Object > ();
   private static HashMap < String, Object > funcReturn = new HashMap < String, Object > ();  private static HashMap < String, String > functions = new HashMap < String, String > ();
     private static ArrayList < String > order = new ArrayList < String > ();
-  private static ArrayList < String > tempFuncParamsType = new ArrayList < String > ();  private static String globalSignal, filename,errorMessage = "";  private static Boolean globalVar = false, funcParam = false, localVar = false, error = false;
+  private static ArrayList < String > tempFuncParamsType = new ArrayList < String > ();  private static ArrayList <String > tempExprType=new ArrayList <String > ();
+    private static String globalSignal, filename,errorMessage = "";  private static Boolean globalVar = false, funcParam = false, localVar = false, error = false,expr=false;
   private static int localType = - 1, nArgs=0;
   private static File teste;  public static void main(String args []) throws FileNotFoundException  {    File f1 = new File("examples/teste.txt");    if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();      root.dump("");      /* TESTING
       for (int i=0; i < order.size(); i++)
       	System.out.println("ORDER: "+order.get(i));
-*/      System.out.println("ISTO: " + globalVars.get("ab").getValue());      System.out.println("Accepted. " + myYal.eval(root));      JVCgenerator g1 = new JVCgenerator("teste");      g1.addModule("nomeModulo");      g1.addVar("variavel", "2");      g1.closeWriter();    }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: " + e.getMessage());    }  }  int eval(SimpleNode node)  {    if (node.jjtGetNumChildren() == 0)  // leaf node with integer value
+      System.out.println("ISTO: " + globalVars.get("ab").getValue());*/
+            System.out.println("Accepted. " + myYal.eval(root));      JVCgenerator g1 = new JVCgenerator("teste");      g1.addModule("nomeModulo");      g1.addVar("variavel", "2");      g1.closeWriter();    }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: " + e.getMessage());    }  }  int eval(SimpleNode node)  {    if (node.jjtGetNumChildren() == 0)  // leaf node with integer value
     return node.val;    else if (node.jjtGetNumChildren() == 1)  // only one child
     return this.eval((SimpleNode) node.jjtGetChild(0));    SimpleNode lhs = (SimpleNode) node.jjtGetChild(0); //left child
     SimpleNode rhs = (SimpleNode) node.jjtGetChild(1); // right child
@@ -694,7 +696,8 @@ void Assign()         :{/*@bgen(jjtree) assign */
     jjtree.openNodeScope(jjtn001);
   }
   try {
-/*@egen*/  Lhs()/*@bgen(jjtree)*/
+/*@egen*/
+    Lhs()/*@bgen(jjtree)*/
   } catch (Throwable jjte001) {
     if (jjtc001) {
       jjtree.clearNodeScope(jjtn001);
@@ -908,34 +911,38 @@ void Assign()         :{/*@bgen(jjtree) assign */
            jjtree.closeNodeScope(jjtn005, true);
          }
        }
-/*@egen*/      ) )?  )  | "["/*@bgen(jjtree) ArraySize */
-        {
-          SimpleNode jjtn006 = new SimpleNode(JJTARRAYSIZE);
-          boolean jjtc006 = true;
-          jjtree.openNodeScope(jjtn006);
-        }
-        try {
+/*@egen*/      ) )?  )  | ("["/*@bgen(jjtree) ArraySize */
+         {
+           SimpleNode jjtn006 = new SimpleNode(JJTARRAYSIZE);
+           boolean jjtc006 = true;
+           jjtree.openNodeScope(jjtn006);
+         }
+         try {
 /*@egen*/ ArraySize()/*@bgen(jjtree)*/
-        } catch (Throwable jjte006) {
-          if (jjtc006) {
-            jjtree.clearNodeScope(jjtn006);
-            jjtc006 = false;
-          } else {
-            jjtree.popNode();
-          }
-          if (jjte006 instanceof RuntimeException) {
-            throw (RuntimeException)jjte006;
-          }
-          if (jjte006 instanceof ParseException) {
-            throw (ParseException)jjte006;
-          }
-          throw (Error)jjte006;
-        } finally {
-          if (jjtc006) {
-            jjtree.closeNodeScope(jjtn006, true);
-          }
-        }
-/*@egen*/            "]"}void ArraySize():{/*@bgen(jjtree) ArraySize */
+         } catch (Throwable jjte006) {
+           if (jjtc006) {
+             jjtree.clearNodeScope(jjtn006);
+             jjtc006 = false;
+           } else {
+             jjtree.popNode();
+           }
+           if (jjte006 instanceof RuntimeException) {
+             throw (RuntimeException)jjte006;
+           }
+           if (jjte006 instanceof ParseException) {
+             throw (ParseException)jjte006;
+           }
+           throw (Error)jjte006;
+         } finally {
+           if (jjtc006) {
+             jjtree.closeNodeScope(jjtn006, true);
+           }
+         }
+/*@egen*/            "]"
+{
+  if (expr == true)  {
+    tempExprType.add("array");  }}
+  )}void ArraySize():{/*@bgen(jjtree) ArraySize */
   SimpleNode jjtn000 = new SimpleNode(JJTARRAYSIZE);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
@@ -1020,20 +1027,23 @@ void Assign()         :{/*@bgen(jjtree) assign */
        jjtree.closeNodeScope(jjtn001, true);
      }
    }
-/*@egen*/          )?  (/*@bgen(jjtree) Integer */
-   {
-     SimpleNode jjtn002 = new SimpleNode(JJTINTEGER);
-     boolean jjtc002 = true;
-     jjtree.openNodeScope(jjtn002);
-   }
-   try {
+/*@egen*/          )?  ((/*@bgen(jjtree) Integer */
+    {
+      SimpleNode jjtn002 = new SimpleNode(JJTINTEGER);
+      boolean jjtc002 = true;
+      jjtree.openNodeScope(jjtn002);
+    }
+    try {
 /*@egen*/t2 = < INTEGER >/*@bgen(jjtree)*/
-   } finally {
-     if (jjtc002) {
-       jjtree.closeNodeScope(jjtn002, true);
-     }
-   }
-/*@egen*/           |LOOKAHEAD(3) (/*@bgen(jjtree) Call */
+    } finally {
+      if (jjtc002) {
+        jjtree.closeNodeScope(jjtn002, true);
+      }
+    }
+/*@egen*/           {
+    if (expr == true)
+    {		tempExprType.add("scalar");
+    }  })  |LOOKAHEAD(3) (/*@bgen(jjtree) Call */
                  {
                    SimpleNode jjtn003 = new SimpleNode(JJTCALL);
                    boolean jjtc003 = true;
@@ -1348,7 +1358,9 @@ void Assign()         :{/*@bgen(jjtree) assign */
       jjtree.closeNodeScope(jjtn000, true);
     }
   }
-/*@egen*/}void Exprtest()       :{  Token t1;}{  < LPAR >/*@bgen(jjtree) Lhs */
+/*@egen*/}void Exprtest()       :{  Token t1;}{
+  {
+    expr=true;  }  < LPAR >/*@bgen(jjtree) Lhs */
            {
              SimpleNode jjtn001 = new SimpleNode(JJTLHS);
              boolean jjtc001 = true;
@@ -1420,7 +1432,11 @@ void Assign()         :{/*@bgen(jjtree) assign */
       jjtree.closeNodeScope(jjtn003, true);
     }
   }
-/*@egen*/      < RPAR >}void Call()       :
+/*@egen*/      < RPAR >
+
+  {	for (int i=0; i < tempExprType.size(); i++)
+		System.out.println("CHECK THIS OUT: "+tempExprType.get(i));
+  }}void Call()       :
 {
   Token t1;}{  t1=<ID> ("." <ID>)?  {
     if (!functions.containsKey((String) t1.image))
@@ -1429,6 +1445,18 @@ void Assign()         :{/*@bgen(jjtree) assign */
             errorMessage = "Call: Missplaced or nonexistent function call: " + (String) t1.image;
             System.out.println("ERROR: " + errorMessage);
             System.exit(1);    	}
+
+	if (expr == true)	{	  String returnF=functions.get((String) t1.image);
+	  
+    if(!funcReturn.containsKey(returnF))    {			error = true;
+            errorMessage = "Expr: return void function call: " + (String) t1.image;
+            System.out.println("ERROR: " + errorMessage);
+            System.exit(1);
+    }else    {
+      	String type=funcReturn.get(returnF).getType();		tempExprType.add(type);
+    }
+  }
+    
     order.add((String) t1.image);  }
    <LPAR>  (/*@bgen(jjtree) ArgumentList */
    {
@@ -1647,7 +1675,12 @@ void Argument()       :{  Token t1, t2, t3;}{
           jjtree.closeNodeScope(jjtn001, true);
         }
       }
-/*@egen*/        "]"}void ScalarAccess()       :{  Token t1;}{  t1 = < ID >  (    "."    (      < SIZE >/*@bgen(jjtree) size */
+/*@egen*/        "]"
+  {	if (expr == true)
+  {
+    tempExprType.add("array");
+  }
+  }}void ScalarAccess()       :{  Token t1;}{  t1 = < ID >  (    "."    (      < SIZE >/*@bgen(jjtree) size */
       {
         SimpleNode jjtn001 = new SimpleNode(JJTSIZE);
         boolean jjtc001 = true;
@@ -1673,7 +1706,11 @@ void Argument()       :{  Token t1, t2, t3;}{
           jjtree.closeNodeScope(jjtn001, true);
         }
       }
-/*@egen*/           )  )?}void Index()       :{  Token t1;}{  (    t1 = < ID >/*@bgen(jjtree) ID */
+/*@egen*/           )  )?
+
+  {	if (expr == true)	{
+	  tempExprType.add("scalar");	}
+  }}void Index()       :{  Token t1;}{  (    t1 = < ID >/*@bgen(jjtree) ID */
     {
       SimpleNode jjtn001 = new SimpleNode(JJTID);
       boolean jjtc001 = true;
@@ -1703,7 +1740,7 @@ void Argument()       :{  Token t1, t2, t3;}{
       jjtree.closeNodeScope(jjtn002, true);
       jjtc002 = false;
     }
-/*@egen*/    {      jjtn002.valor = Integer.parseInt(t1.image);    }/*@bgen(jjtree)*/
+/*@egen*/    {     // jjtThis.valor = Integer.parseInt(t1.image);    }/*@bgen(jjtree)*/
     } finally {
       if (jjtc002) {
         jjtree.closeNodeScope(jjtn002, true);

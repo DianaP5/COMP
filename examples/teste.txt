@@ -11,12 +11,10 @@ c=3;
 }
 
 function z(ab,b){
-while(k<p(c,2)){
+while(k<p(c,2) & 2){
 }
 c=3;
 }
-
-
 
 function ffff(){
 c=3;
