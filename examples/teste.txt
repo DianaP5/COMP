@@ -6,13 +6,17 @@ c=[a.size];
 a=8;
 ab=9;
 
-function z(a,b){
+function y[]=p(f[],p){
 c=3;
 }
 
-function y[]=a(f[],b){
+function z(ab,b){
+while(k<p(c,2)){
+}
 c=3;
 }
+
+
 
 function ffff(){
 c=3;
