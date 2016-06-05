@@ -1906,7 +1906,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
           String lastGlobal = order.get(order.size() - 1);
           Object ob1 = globalVars.get((String) t1.image);
           Object ob2 = globalVars.get(lastGlobal);
-          if (ob1.getValue().equals("null"))
+          if (ob1.getSize().equals("null"))
           {
             error = true;
             errorMessage = "ScalarAccess: Invalid var.size: " + (String) t1.image + "." + ob1.getValue();
