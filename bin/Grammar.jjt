@@ -1,570 +1,25 @@
-
 /**
  * JJTree template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
- */options{  static = true;
-  LOOKAHEAD = 2;}PARSER_BEGIN(Grammar)import java.util.HashMap;
-import java.lang.*; 
-import java.util.*;
-import java.io.File; 
-import java.io.FileInputStream;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileNotFoundException;
-
-public class Grammar{
-    /*local vars-> params function-> global vars*/
-	private static HashMap<String,Object> localVars=new HashMap<String,Object>();
-	private static HashMap<String,Object> funcParams=new HashMap<String,Object>();
-	private static HashMap<String,Object> globalVars=new HashMap<String,Object>();
-	private static HashMap<String,Object> funcReturn=new HashMap<String,Object>();
-	private static HashMap<String,String> functions=new HashMap<String,String>();
-	
-	private static ArrayList<String> order = new ArrayList<String>();
-	
-	private static String ret, declaration, funcName, LocalVar, numFunc, numFunc2, name_f2, name_f1, ReturnVar, string_aux2;
-	private static int i=0, j=0, aux=0, k=0, g=0, aux1=0, flag=0, flagArrSize=0, flagt1, flagt2;
-	private static String globalSignal, filename;
-	private static File teste;
-
-	private static Boolean globalVar=false,funcParam=false,localVar=false, error=false;
-	private static String errorMessage="";
-	
-	/** ArrayList arr. */
-	private static ArrayList<String> arr; 
-	
-  public static void main(String args []) throws FileNotFoundException  {
-    	File f1 = new File("examples/teste.txt");
-		if(f1.exists())
-		{
-		  FileInputStream s1=new FileInputStream(f1);
-		 	System.out.println("Reading file...");
-		}
-		else System.out.println("File not found.");
-    try    {
-      BufferedReader stream =  new BufferedReader(new FileReader(f1));
-	  Grammar myYal = new Grammar(stream);
-	        SimpleNode root = myYal.Module();
-      root.dump("");
-
-/* TESTING
+ */options{  static = true;  LOOKAHEAD= 2;}PARSER_BEGIN(Grammar)import java.util.HashMap;import java.lang.*;import java.util.*;import java.io.File;import java.io.FileInputStream;import java.io.BufferedReader;import java.io.FileReader;import java.io.FileNotFoundException;public class Grammar{  /*local vars-> params function-> global vars*/  private static HashMap < String, Object > localVars = new HashMap < String, Object > ();  private static HashMap < String, Object > funcParams = new HashMap < String, Object > ();  private static HashMap < String, Object > globalVars = new HashMap < String, Object > ();  private static HashMap < String, Object > funcReturn = new HashMap < String, Object > ();  private static HashMap < String, String > functions = new HashMap < String, String > ();  private static ArrayList < String > order = new ArrayList < String > ();  private static String ret, declaration, funcName, LocalVar, numFunc, numFunc2, name_f2, name_f1, ReturnVar, string_aux2;  private static int i = 0, j = 0, aux = 0, k = 0, g = 0, aux1 = 0, flag = 0, flagArrSize = 0, flagt1, flagt2;  private static String globalSignal, filename;  private static File teste;  private static Boolean globalVar = false, funcParam = false, localVar = false, error = false;  private static int localType = - 1;  private static String errorMessage = "";  /** ArrayList arr. */  private static ArrayList < String > arr;  public static void main(String args []) throws FileNotFoundException  {    File f1 = new File("examples/teste.txt");    if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();      root.dump("");      /* TESTING
       for (int i=0; i < order.size(); i++)
       	System.out.println("ORDER: "+order.get(i));
-*/
-		System.out.println("ISTO: "+globalVars.get("ab").getValue());
-
-
-      System.out.println("Accepted. " + myYal.eval(root));
-      
-      JVCgenerator g1=new JVCgenerator("teste");
-      g1.addModule("nomeModulo");
-      g1.addVar("variavel","2");
-      g1.closeWriter();
-          }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: "+e.getMessage());    }  }
-
-  int eval(SimpleNode node)
-  {
-    if (node.jjtGetNumChildren() == 0)  // leaf node with integer value
-    return node.val;
-    else if (node.jjtGetNumChildren() == 1)  // only one child
-    return this.eval((SimpleNode) node.jjtGetChild(0));
-    SimpleNode lhs = (SimpleNode) node.jjtGetChild(0); //left child
+*/      System.out.println("ISTO: " + globalVars.get("ab").getValue());      System.out.println("Accepted. " + myYal.eval(root));      JVCgenerator g1 = new JVCgenerator("teste");      g1.addModule("nomeModulo");      g1.addVar("variavel", "2");      g1.closeWriter();    }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: " + e.getMessage());    }  }  int eval(SimpleNode node)  {    if (node.jjtGetNumChildren() == 0)  // leaf node with integer value
+    return node.val;    else if (node.jjtGetNumChildren() == 1)  // only one child
+    return this.eval((SimpleNode) node.jjtGetChild(0));    SimpleNode lhs = (SimpleNode) node.jjtGetChild(0); //left child
     SimpleNode rhs = (SimpleNode) node.jjtGetChild(1); // right child
-    switch (node.id)
-    {
-      case GrammarTreeConstants.JJTMODULE :
-      //PORQUE? TODO
-      System.out.println(".class public ");
-      break;
-      default : // abort
-      System.out.println("Operador ilegal!");
-      System.exit(1);
-    }
-    return 0;
-  }}PARSER_END(Grammar)SKIP :{
-" "
-| "\t"
-| "\n"
-| "\r"
-| <"//" (~["\n","\r"])* ("\n" | "\r" | "\r\n")>
-| <"/*" (~["*"])* "*" ("*" | ~["*","/"] (~["*"])* "*")* "/">
-}
-TOKEN : /* LITERALS */{
+    switch (node.id)    {      case GrammarTreeConstants.JJTMODULE :       //PORQUE? TODO
+      System.out.println(".class public ");      break;      default : // abort
+      System.out.println("Operador ilegal!");      System.exit(1);    }    return 0;  }}PARSER_END(Grammar)SKIP :{  " "| "\t"| "\n"| "\r"| < "//" (~[ "\n", "\r" ])*    (      "\n"    | "\r"    | "\r\n"    ) >| < "/*" (~[ "*" ])* "*"    (      "*"    | ~[ "*", "/" ] (~[ "*" ])* "*"    )*    "/" >}TOKEN : /* LITERALS */{  < RELA_OP :    ">"  | "<"  | "<="  | ">="  | "=="  | "!=" >| < ADDSUB_OP :    "+"  | "-" >| < ARITH_OP :    "*"  | "/"  | "<<"  | ">>"  | ">>>" >| < BITWISE_OP :    "&"  | "|"  | "^" >| < NOT_OP : "!" >| < WHILE : "while" >| < IF : "if" >| < ELSE : "else" >| < ASSIGN : "=" >| < ASPA : "\"" >| < LPAR : "(" >| < RPAR : ")" >| < VIRG : "," >| < PVIRG : ";" >| < LCHAVETA : "{" >| < RCHAVETA : "}" >| < FUNCTION : "function" >| < MODULE : "module" >| < SIZE : "size" >}TOKEN : /* IDENTIFIERS */{  < INTEGER : (< DIGIT >)+ >| < ID :    < LETTER >    (      < LETTER >    | < DIGIT >    )* >| < #LETTER : [ "$", "A"-"Z", "_", "a"-"z" ] >| < #DIGIT : [ "0"-"9" ] >| < STRING : "\"" ([ "a"-"z", "A"-"Z", "0"-"9", ":", " ", "=" ])+ "\"" >}SimpleNode Module() :{  Token t1;}{  < MODULE > t1 = < ID >  {    jjtThis.module = (String) t1.image;    System.out.println("MODULE: " + t1.image);    globalVar = true;  }  #ID   < LCHAVETA > (Declaration() #Declaration)*(  Function() #Function)*< RCHAVETA >{  return jjtThis;}}void Declaration() #void :{  Token t1, t2;}{  (    ArrayElement() #Array  | ScalarElement() #Scalar)(  < ASSIGN >  (    (      "["       ArraySize() #ArraySize       "]"    )  |    (      (t1 = < ADDSUB_OP >)      {        if (globalVar == true)        {          String lastGlobal = order.get(order.size() - 1);          Object ob1 = globalVars.get(lastGlobal);          ob1.setOperator((String) t1.image);          globalVars.put(lastGlobal, ob1);        }        System.out.println("operator: " + (String) t1.image);        // jjtThis.val2 = (String) t1.image; globalSignal = (String) t1.image;
+      }      #AddSubOP    )?    (      t2 = < INTEGER >      {        if (globalVar == true)        {          String lastGlobal = order.get(order.size() - 1);          Object ob1 = globalVars.get(lastGlobal);          if (!ob1.getSize().equals("null") && ob1.getType().equals("array"))          {            if (ob1.getOperator().equals("-"))             ob1.setValue("-" + (String) t2.image);            else ob1.setValue((String) t2.image);            globalVars.put(lastGlobal, ob1);          }          else if (ob1.getSize().equals("null") && ob1.getType().equals("array"))          {            error = true;            errorMessage = "Array: Uninitialized array : " + (String) t2.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }          else          {            if (ob1.getOperator().equals("-"))             ob1.setValue("-" + (String) t2.image);            else ob1.setValue((String) t2.image);            globalVars.put(lastGlobal, ob1);          }        }        System.out.println("Value: " + Integer.parseInt((String) t2.image));        /*jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image)*/        ;      }      #IntValue)  ))?< PVIRG >}void Function() #function :{  Token t1;}{  {    globalVar = false;  }  (    LOOKAHEAD(3)    (      < FUNCTION >      (        functionReturn() #funcReturn)      < ASSIGN > t1 = < ID >      {        if (!functions.containsKey((String) t1.image))        {          String lastReturn = order.get(order.size() - 1);          String returnName = funcReturn.get(lastReturn).getName();          functions.put((String) t1.image, returnName);          order.add((String) t1.image);        }        else        {          error = true;          errorMessage = "Functions with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }        System.out.println("func assign id: " + (String) t1.image);      }      < LPAR >      (        Varlist() #VarList)?      < RPAR >    )  |    (      < FUNCTION > t1 = < ID >      {        if (!functions.containsKey((String) t1.image))        {          String lastReturn = order.get(order.size() - 1);          functions.put((String) t1.image, "null");          order.add((String) t1.image);        }        else        {          error = true;          errorMessage = "Functions with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }        System.out.println("func id: " + (String) t1.image);      }      < LPAR >      (        Varlist() #VarList)?      < RPAR >    )  )  {    funcParam = false;  }  < LCHAVETA > Stmtlst() #StmtLst < RCHAVETA >}void functionReturn() #void :{  Token t1;}{  (    t1 = < ID >    {      System.out.println("Func return id: " + (String) t1.image);      //jjtThis.nameF = (String) t1.image; name_f1 = (String) t1.image;
+      if (!funcReturn.containsKey((String) t1.image))      {        Object ob1 = new Object((String) t1.image, "scalar", null);        funcReturn.put((String) t1.image, ob1);        order.add((String) t1.image);      }      else      {        error = true;        errorMessage = "Function: Return var with same id: " + (String) t1.image;        System.out.println("ERROR: " + errorMessage);        System.exit(1);      }    }    #ID)  (    "[" "]"    {      String lastReturn = order.get(order.size() - 1);      Object ob1 = funcReturn.get(lastReturn);      ob1.setType("array");      funcReturn.put(lastReturn, ob1);      System.out.println("Func return type: ARRAY");    }  )?}void Varlist() #void :{}{  {    funcParam = true;  }  (    ArrayElement() #Array  | ScalarElement() #Scalar)(  < VIRG >  (    ArrayElement() #Array  | ScalarElement() #Scalar))*}void ArrayElement() #void :{  Token t1;}{  (    t1 = < ID >    {      if (globalVar == true)      {        if (!globalVars.containsKey((String) t1.image))        {          Object ob1 = new Object((String) t1.image, "array", null);          globalVars.put((String) t1.image, ob1);          order.add((String) t1.image);        }        else        {          error = true;          errorMessage = "Array: Global var with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }      }      else if (funcParam == true)      {        String lastFunc = order.get(order.size() - 1);        if (!funcParams.containsKey(lastFunc + " " + (String) t1.image))        {          Object ob1 = new Object((String) t1.image, "array", null);          funcParams.put(lastFunc + " " + (String) t1.image, ob1);          System.out.println("Array: Func param id: " + (String) t1.image);          //order.add((String) t1.image);
+        }        else        {          error = true;          errorMessage = "Array: Function param with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }      }      System.out.println("array id: " + (String) t1.image);      //jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;
+    }    #ID)  ("[" "]"  )}void ScalarElement() #void :{  Token t1;}{  (    t1 = < ID >    {      if (globalVar == true)      {        if (!globalVars.containsKey((String) t1.image))        {          Object ob1 = new Object((String) t1.image, "scalar", null);          globalVars.put((String) t1.image, ob1);          order.add((String) t1.image);        }        else        {          Object ob1 = globalVars.get((String) t1.image);          if (!ob1.getType().equals("scalar"))          {            error = true;            errorMessage = "Scalar: Global var with same name: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }          order.add((String) t1.image);        }      }      if (funcParam == true)      {        String lastFunc = order.get(order.size() - 1);        if (!funcParams.containsKey(lastFunc + " " + (String) t1.image))        {          Object ob1 = new Object((String) t1.image, "scalar", null);          funcParams.put(lastFunc + " " + (String) t1.image, ob1);          System.out.println("Scalar: Func param id: " + (String) t1.image);          //order.add((String) t1.image);
+        }        else        {          error = true;          errorMessage = "Scalar: Function param with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }      }      System.out.println("Scalar id: " + (String) t1.image);      //jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;
+    }    #ID)}void Stmtlst() #void :{}{  {    localVar = true;  }  (    Stmt() #Stmt)*}void Stmt() #void :{}{  While()  {    localType = 0;  }  #WHILE| If() #IF| LOOKAHEAD(3)(  Assign() #ASSIGN)| Call() #CALL < PVIRG >{  numFunc = "";  numFunc2 = "";  aux = 0;}}//TODO 
+void Assign() #assign :{}{  Lhs() #Lhs < ASSIGN > Rhs() #Rhs < PVIRG >}void Lhs() #void :{}{  (    ArrayAccess() #ArrayAccess  | ScalarAccess() #ScalarAccess)}void Rhs() #void :{  Token t1;}{  (    (Term() #Term)    (      (t1 = < ARITH_OP > #ARITHOP      | t1 = < BITWISE_OP > #BITWISEOP      | t1 = < ADDSUB_OP > #ADDSUBOP)      (Term() #Term) )?  )  | "[" ArraySize() #ArraySize "]"}void ArraySize():{  Token t1;}{  (    (      ScalarAccess() #ScalarAccess    )  | t1 = < INTEGER >    {      if (globalVar == true)      {        String lastGlobal = order.get(order.size() - 1);        Object ob1 = globalVars.get(lastGlobal);        ob1.setSize((String) t1.image);        globalVars.put(lastGlobal, ob1);      }      System.out.println("array size: " + (String) t1.image);      /*jjtThis.arraysize = Integer.parseInt((String)t1.image);*/    }    #Int)}void Term() #void :{  Token t1, t2;}{  (t1 = < ADDSUB_OP > #AddSubOP)?  (t2 = < INTEGER > #Integer  |LOOKAHEAD(3) (Call() #Call)  |ArrayAccess() #ArrayAccess     |ScalarAccess() #SCALARACCESS)
+  
+ }void While() :{}{  < WHILE > #While Exprtest() #Exprtest < LCHAVETA > Stmtlst() #Stmtlst < RCHAVETA >}void If():{}{  < IF > #If Exprtest() #Exprtest < LCHAVETA > Stmtlst() #Stmtlst < RCHAVETA > (< ELSE > #Else < LCHAVETA > Stmtlst() #Stmtlst < RCHAVETA >)?}void Exprtest() #void :{  Token t1;}{  < LPAR > Lhs() #Lhs   t1 = < RELA_OP >  {  /*jjtThis.operation = (String) t1.image;*/  }  #WhileOP   Rhs() #Rhs < RPAR >}void Call() #void :
+{}{  <ID> ("." <ID>)? <LPAR>  (ArgumentList() #ArgumentList)?  <RPAR>}void ArgumentList() #void :{}{  Argument()  (    < VIRG > Argument() #Argument)*}
 
-<RELA_OP: ">" | "<" | "<=" | ">=" | "==" | "!=">
-| <ADDSUB_OP: "+" | "-">
-| <ARITH_OP: "*" | "/" | "<<" | ">>" | ">>>">
-| <BITWISE_OP: "&" | "|" | "^">
-| <NOT_OP: "!">
-| <WHILE: "while">
-| <IF: "if">
-| <ELSE: "else">
-| <ASSIGN: "=">
-| <ASPA: "\"">
-| <LPAR: "(">
-| <RPAR: ")">
-| <VIRG: ",">
-| <PVIRG: ";">
-| <LCHAVETA: "{">
-| <RCHAVETA: "}">
-| <FUNCTION: "function">
-| <MODULE: "module">
-| <SIZE: "size">
-}TOKEN : /* IDENTIFIERS */{
-
-<INTEGER: (<DIGIT>)+>
-| <ID: <LETTER> (<LETTER> | <DIGIT>)*>
-| <#LETTER: ["$","A"-"Z","_","a"-"z"]>
-| <#DIGIT: ["0"-"9"]>
-| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">}SimpleNode Module(): {Token t1;}
-{
-	<MODULE> t1=<ID>  {
-	  jjtThis.module = (String) t1.image;
-		System.out.println("MODULE: "+t1.image);
-		globalVar=true;
-	  } #ID
-	 <LCHAVETA> (Declaration() #Declaration)* (Function() #Function)* <RCHAVETA>
-	{
-    return jjtThis;
-    }
-}void Declaration() #void: {Token t1, t2;}
-{
-	(ArrayElement() #Array | ScalarElement() #Scalar)
-
-	( <ASSIGN>
-	( ( "["
-	  ArraySize() 	#ArraySize
-		"]"
-		)
-	|
-	( (t1 = <ADDSUB_OP>)	{
-
-		if (globalVar == true)
-		{ 
-			String lastGlobal=order.get(order.size()-1);
-			Object ob1=globalVars.get(lastGlobal);
-			ob1.setOperator((String) t1.image);
-			globalVars.put(lastGlobal,ob1);	
-		}
-
-		System.out.println("operator: "+(String) t1.image);
-		
-	 // jjtThis.val2 = (String) t1.image; globalSignal = (String) t1.image;
-	 } #AddSubOP
-	)?
-	(  t2 = <INTEGER>	{
-		if (globalVar == true)
-		{ 
-			String lastGlobal=order.get(order.size()-1);
-			Object ob1=globalVars.get(lastGlobal);
-		
-			if (!ob1.getSize().equals("null") && ob1.getType().equals("array"))			{
-			  	if (ob1.getOperator().equals("-"))
-					ob1.setValue("-"+(String) t2.image);
-				else ob1.setValue((String) t2.image);
-
-				globalVars.put(lastGlobal,ob1);
-				
-			}else if (ob1.getSize().equals("null") && ob1.getType().equals("array"))			{				 error=true;
-		     errorMessage="Array: Uninitialized array : "+(String) t2.image;
-		     System.out.println("ERROR: "+errorMessage);
-		     System.exit(1);
-			}else			{				if (ob1.getOperator().equals("-"))
-					ob1.setValue("-"+(String) t2.image);
-				else ob1.setValue((String) t2.image);
-
-				globalVars.put(lastGlobal,ob1);
-			}
-		}
-	  System.out.println("Value: "+Integer.parseInt((String) t2.image));
-	/*jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image)*/;
-	}#IntValue)
-	)
-	)?
-	<PVIRG>
-}
-
-void Function() #function: {Token t1;}
-{
-  {    	globalVar=false;
-  }
-	(LOOKAHEAD(3) (<FUNCTION>(functionReturn() #funcReturn) <ASSIGN> t1=<ID>	{
-	  	if (!functions.containsKey((String) t1.image))
-		    {
-		      String lastReturn=order.get(order.size()-1);
-			  String returnName=funcReturn.get(lastReturn).getName();
-			  
-		      functions.put((String) t1.image,returnName);
-		      order.add((String) t1.image);
-		  }else
-		  {
-		     error=true;
-		     errorMessage="Functions with same name: "+(String) t1.image;
-		     System.out.println("ERROR: "+errorMessage);
-		     System.exit(1);
-		   }
-		   		System.out.println("func assign id: "+(String) t1.image);
-	}
-	 <LPAR> (Varlist() #VarList)? <RPAR>) 
-	|
-	(<FUNCTION> t1=<ID>
-	{
-	  if (!functions.containsKey((String) t1.image))
-		    {
-		      String lastReturn=order.get(order.size()-1);
-			  
-		      functions.put((String) t1.image,"null");
-		      order.add((String) t1.image);
-		  }else
-		  {
-		     error=true;
-		     errorMessage="Functions with same name: "+(String) t1.image;
-		     System.out.println("ERROR: "+errorMessage);
-		     System.exit(1);
-		   }
-		   
-		System.out.println("func id: "+(String) t1.image);
-	}
-	<LPAR>(Varlist() #VarList)? <RPAR>))
-	{		funcParam=false;
-	}
-	<LCHAVETA> Stmtlst()  #StmtLst<RCHAVETA>
-}
-
-void functionReturn() #void : {Token t1;}
-{
- (  t1 =	<ID>  {
-	System.out.println("Func return id: "+(String) t1.image);
-   //jjtThis.nameF = (String) t1.image; name_f1 = (String) t1.image;
-
-	if (!funcReturn.containsKey((String) t1.image))
-		    {
-		      
-		   	 Object ob1=new Object((String) t1.image,"scalar",null);
-		    
-		    funcReturn.put((String) t1.image,ob1);
-		    order.add((String) t1.image);
-		  }else
-		  {
-		     error=true;
-		     errorMessage="Function: Return var with same id: "+(String) t1.image;
-		     System.out.println("ERROR: "+errorMessage);
-		     System.exit(1);
-		   }
-		   
-   } #ID) 
-  ( "[" "]"
-  {
-		  
-			String lastReturn=order.get(order.size()-1);
-			Object ob1=funcReturn.get(lastReturn);
-
-			ob1.setType("array");
-			
-			funcReturn.put(lastReturn,ob1);	
-		
-   			System.out.println("Func return type: ARRAY");
-     }
-  )?
-}
-
-
-void Varlist() #void: {}
-{
-  {  	funcParam=true;
-  }
-  	
-	(ArrayElement() #Array
-	|ScalarElement() #Scalar)
-	(<VIRG> (ArrayElement() #Array
-			|ScalarElement() #Scalar))*
-}
-
-void ArrayElement() #void: {Token t1;}
-{
-	(  t1 =	<ID>  {
-
-	  if(globalVar == true)
-		  {
-		    if (!globalVars.containsKey((String) t1.image))		    {		      
-		   	 Object ob1=new Object((String) t1.image,"array",null);
-		    
-		    globalVars.put((String) t1.image,ob1);
-		    order.add((String) t1.image);
-		  }else		  {
-		     error=true;
-		     errorMessage="Array: Global var with same name: "+(String) t1.image;
-		     System.out.println("ERROR: "+errorMessage);
-		     System.exit(1);
-		   }
-		  }else if (funcParam == true)		  {
-		    String lastFunc=order.get(order.size()-1);
-		    			if (!funcParams.containsKey(lastFunc+" "+(String) t1.image))
-		    {
-		
-		   	 Object ob1=new Object((String) t1.image,"array",null);
-		    
-		    funcParams.put(lastFunc+" "+(String) t1.image,ob1);
-		    System.out.println("Array: Func param id: "+(String) t1.image);
-		    //order.add((String) t1.image);
-		  	}else
-		  {
-		     error=true;
-		     errorMessage="Array: Function param with same name: "+(String) t1.image;
-		     System.out.println("ERROR: "+errorMessage);
-		     System.exit(1);
-		   }
-		  }
-		  
-	  System.out.println("array id: "+(String) t1.image);
-	  //jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;
-	  } #ID) 
-  ( "[" "]"
-  )
-}
-
-void ScalarElement() #void: {Token t1;}
-{
-	(  t1 =	<ID>  {
-
-		 if(globalVar == true)
-		  {
-		    if (!globalVars.containsKey((String) t1.image))
-		    {
-		      
-		   	 Object ob1=new Object((String) t1.image,"scalar",null);
-		    
-		    globalVars.put((String) t1.image,ob1);
-		    order.add((String) t1.image);
-		    
-		  	}else
-		  {
-
-		    Object ob1=globalVars.get((String) t1.image);
-
-		    if (!ob1.getType().equals("scalar"))		    {
-		     error=true;
-		     errorMessage="Scalar: Global var with same name: "+(String) t1.image;
-		     System.out.println("ERROR: "+errorMessage);
-		     System.exit(1);
-		   }
-
-		    order.add((String) t1.image);
-		 }
-		  }if (funcParam == true)
-		  {
-		     String lastFunc=order.get(order.size()-1);
-		     
-			if (!funcParams.containsKey(lastFunc+" "+(String) t1.image))
-		    {
-		     
-		   	 Object ob1=new Object((String) t1.image,"scalar",null);
-		    
-		    funcParams.put(lastFunc+" "+(String) t1.image,ob1);
-		    
-		    System.out.println("Scalar: Func param id: "+(String) t1.image);
-		    
-		    //order.add((String) t1.image);
-		  	}else
-		  {
-		     error=true;
-		     errorMessage="Scalar: Function param with same name: "+(String) t1.image;
-		     System.out.println("ERROR: "+errorMessage);
-		     System.exit(1);
-		   }
-		  }
-		  
-	  System.out.println("Scalar id: "+(String) t1.image);
-	  //jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;
-	  } #ID) 
-	
-}
-
-void Stmtlst() #void: {}
-{
-
-  {	localVar=true;
-  }
-	(Stmt() #Stmt)*
-}
-
-void Stmt() #void: {}
-{
-	While()	#WHILE
-	|If() #IF|
-	LOOKAHEAD(3) (Assign() #ASSIGN)
-	|Call() #CALL <PVIRG>
-	{
-	  numFunc=""; numFunc2=""; aux=0;
-	}
-}
-
-
-//TODO 
-void Assign() #assign: {}
-{
-	Lhs() #Lhs <ASSIGN> Rhs() #Rhs <PVIRG>
-}
-
-void Lhs() #void: {}
-{
-	(ArrayAccess() #ArrayAccess
-	|ScalarAccess() #ScalarAccess)
-}
-
-void Rhs() #void: {Token t1;}
-{
-	((Term() #Term)
-	{g=1;}
-
-	((
-	  (t1=<ARITH_OP>   {jjtThis.operation = (String) t1.image;} #ARITHOP)   |
-	  (t1=<BITWISE_OP> {jjtThis.operation = (String) t1.image;} #BITWISEOP) |
-	  (t1=<ADDSUB_OP>  {jjtThis.operation = (String) t1.image;} #ADDSUBOP)
-    )
-    ( Term() #TERM { g=1;})
-  )?)
-	| "["ArraySize() #ArraySize"]" {j=1;}
-}
-
-void ArraySize(): {Token t1;}
-{
-	(	  (ScalarAccess() #ScalarAccess
-	)| t1=<INTEGER> {
-	  	if (globalVar == true)
-		{ 
-			String lastGlobal=order.get(order.size()-1);
-			Object ob1=globalVars.get(lastGlobal);
-			ob1.setSize((String) t1.image);
-			globalVars.put(lastGlobal,ob1);	
-		}
-		
-	  System.out.println("array size: "+(String)t1.image);
-	  /*jjtThis.arraysize = Integer.parseInt((String)t1.image);*/
-	  } #Int )
-}
-
-void Term() #void: {Token t1, t2;}
-{
-  {
-    	String operator="", string_aux="";	}
-	(t1 = <ADDSUB_OP> {jjtThis.operation = (String) t1.image; operator = (String) t1.image;} #AddSubOP )?
-
-	(t2 = <INTEGER> {jjtThis.valor = Integer.parseInt(operator + (String) t2.image);} #Integer
-				   | LOOKAHEAD(3) (Call() #Call {aux = 1;})
-				   |((ArrayAccess()) #ArrayAccess {flagt2=1;})
-				   |(ScalarAccess() #SCALARACCESS ))
-
-	{
-    	if(!string_aux.equals("") && g==1 && aux1==1 && aux==1 && numFunc2.equals(""))
-    	  	arr.add(string_aux);    	
-  }
-}
-
-void While(): {}
-{
-	<WHILE> #While Exprtest() #Exprtest <LCHAVETA> Stmtlst() #Stmtlst <RCHAVETA>
-}
-void If(): {}
-{
-	<IF> #If Exprtest() #Exprtest <LCHAVETA> Stmtlst() #Stmtlst <RCHAVETA> (<ELSE> #Else <LCHAVETA> Stmtlst() #Stmtlst <RCHAVETA>)?
-}
-
-void Exprtest() #void: {Token t1;}
-{
-	<LPAR> Lhs() #Lhs
-	t1 = <RELA_OP> {jjtThis.operation = (String) t1.image; } #RelaOP
-	Rhs() #Rhs <RPAR>
-}
-
-
-
-//TODO
-void Call() #void: {Token t1, t2;}
-{
-	<ID> ("." <ID>)? <LPAR> (ArgumentList() #ArgumentList )? <RPAR>
-}
-
-void ArgumentList() #void: {}
-{
-	Argument() (<VIRG> Argument() #Argument)*
-}
-
-
-//TODO
-void Argument() #void: {Token t1,t2,t3;}
-{
-  {
-    //String var1 = "", var2="";
-  }
-  (
-	( t1 = <ID> {jjtThis.Args = (String) t1.image; //var2 = (String) t1.image;
-
-/*
-	if(localVars.containsKey(var2))	{
-	  var1 = localVars.get(var2);	}
-	else if(funcParams.containsKey(var2))
-	{
-		var1=funcParams.get(var2);
-	}
-	else if(globalVars.containsKey(var2))
-	{
-		var1=globalVars.get(var2);
-	}
- */
-	} #ID) |
-	( t2= <STRING> {jjtThis.Args = (String) t2.image; /*var2=(String) t2.image; var1="string"; */} #STRING ) |
-  ( t3 = <INTEGER> {jjtThis.Args = (String) t3.image; /*var2=(String) t3.image; var1="Scalar";*/} #INTEGER )
-  )
-
- 
-}
-
-void ArrayAccess() #void: {}
-{
-	<ID> "[" Index() #Index "]"
-}
-
-void ScalarAccess() #void: {Token t1,t2;}
-{
-	t1=<ID> ( "." (t2 = <SIZE> {
-
-		System.out.println("scalarAccess id: "+(String) t1.image);	  
-
-		if (globalVar == true)
-		{
-		  if (!globalVars.containsKey((String) t1.image))		  {
-		     error=true;
-		     errorMessage="ScalarAccess: Invalid var.size: "+(String) t1.image;
-		     System.out.println("ERROR: "+errorMessage);
-		     System.exit(1);
-		   }
-		  
-			String lastGlobal=order.get(order.size()-1);
-			Object ob1=globalVars.get((String) t1.image);
-			Object ob2=globalVars.get(lastGlobal);
-
-			if (ob1.getSize().equals("null"))
-		  	{
-		     error=true;
-		     errorMessage="ScalarAccess: Invalid var.size: "+(String) t1.image+"."+ob1.getValue();
-		     System.out.println("ERROR: "+errorMessage);
-		     System.exit(1);
-		   	}
-		   
-			ob2.setSize(ob1.getValue());
-			
-			globalVars.put(lastGlobal,ob2);	
-		}
-		
-	//  jjtThis.ScalarA = (String) t1.image;
-
-	  } #size ) )?
-	
-		
-}
-
-void Index() #void: { Token t1;}{   ( t1 = <ID> {jjtThis.Indice = (String) t1.image; } #ID) |
-   ( t1 = <INTEGER> { jjtThis.valor = Integer.parseInt(t1.image); }#Inteiro)
-}
-
-
+void Argument() #void :{  Token t1, t2, t3;}{  ( t1 = < ID > #ID  | t2 = < STRING > #STRING  | t3 = < INTEGER > #INTEGER)}void ArrayAccess() #void :{  Token t1;}{  t1 = < ID >  {    if (localType == 0)    {      if (!localVars.containsKey((String) t1.image))      {        if (!funcParams.containsKey((String) t1.image))        {          if (!globalVars.containsKey((String) t1.image))          {            error = true;            errorMessage = "While params: ArrayAccess: Invalid array id: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }          else          {            if (globalVars.get((String) t1.image).getValue().equals("null"))            {              error = true;              errorMessage = "While params: ArrayAccess: Uninitialized array id: " + (String) t1.image;              System.out.println("ERROR: " + errorMessage);              System.exit(1);            }          }        }        else        {          if (funcParams.get((String) t1.image).getValue().equals("null"))          {            error = true;            errorMessage = "While params: ArrayAccess: Uninitialized array id: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }        }      }      else      {        if (localVars.get((String) t1.image).getValue().equals("null"))        {          error = true;          errorMessage = "While params: ArrayAccess: Uninitialized array id: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }      }    }  }  "[" Index() #Index "]"}void ScalarAccess() #void :{  Token t1;}{  t1 = < ID >  (    "."    (      < SIZE >      {        System.out.println("scalarAccess id: " + (String) t1.image);        if (globalVar == true)        {          if (!globalVars.containsKey((String) t1.image))          {            error = true;            errorMessage = "ScalarAccess: Invalid var.size: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }          String lastGlobal = order.get(order.size() - 1);          Object ob1 = globalVars.get((String) t1.image);          Object ob2 = globalVars.get(lastGlobal);          if (ob1.getValue().equals("null"))          {            error = true;            errorMessage = "ScalarAccess: Invalid var.size: " + (String) t1.image + "." + ob1.getValue();            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }          ob2.setSize(ob1.getValue());          globalVars.put(lastGlobal, ob2);        }        else if (localType == 0)        {          if (!localVars.containsKey((String) t1.image))           if (!funcParams.containsKey((String) t1.image))           if (!globalVars.containsKey((String) t1.image))          {            error = true;            errorMessage = "While params: ScalarAccess: Invalid var.size: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }        }        //  jjtThis.ScalarA = (String) t1.image;
+      }      #size)  )?}void Index() #void :{  Token t1;}{  (    t1 = < ID >    {      if (localType == 0)      {        if (!localVars.containsKey((String) t1.image))         if (!funcParams.containsKey((String) t1.image))         if (!globalVars.containsKey((String) t1.image))        {          error = true;          errorMessage = "While params: index : Invalid scalar id: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }      }      /*jjtThis.Indice = (String) t1.image;*/    }    #ID)|  (    t1 = < INTEGER >    {      jjtThis.valor = Integer.parseInt(t1.image);    }    #Inteiro)}

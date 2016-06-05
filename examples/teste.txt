@@ -10,7 +10,7 @@ function z(a,b){
 c=3;
 }
 
-function y[]=a(f,b){
+function y[]=a(f[],b){
 c=3;
 }
 
