@@ -4,12 +4,14 @@ public class Object {
 	private String type;
 	private String value;
 	private String operator;
+	private String size;
 	
 	Object(String name,String type,String value){
 		this.setName(name);
 		this.setType(type);
 		this.setValue(value);
 		this.setOperator("null");
+		this.setSize("null");
 	}
 	public String getType() {
 		return type;
@@ -37,6 +39,12 @@ public class Object {
 	}
 	public void setOperator(String operator) {
 		this.operator = operator;
+	}
+	public String getSize() {
+		return size;
+	}
+	public void setSize(String size) {
+		this.size = size;
 	}
 	
 	

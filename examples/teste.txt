@@ -3,6 +3,7 @@ ab;
 b=43;
 a=[7];
 c=[a.size];
+a=8;
 ab=9;
 
 function z(a,b){

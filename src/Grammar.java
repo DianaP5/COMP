@@ -202,7 +202,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     throw new Error("Missing return statement in function");
   }
 
-//sums and subs TODO  static final public void Declaration() throws ParseException {
+  static final public void Declaration() throws ParseException {
                            Token t1, t2;
     if (jj_2_3(2)) {
            SimpleNode jjtn001 = new SimpleNode(JJTARRAY);
@@ -317,7 +317,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
           ;
         }
         t2 = jj_consume_token(INTEGER);
-                                  SimpleNode jjtn005 = new SimpleNode(JJTINTEIRO);
+                                  SimpleNode jjtn005 = new SimpleNode(JJTINTVALUE);
                                   boolean jjtc005 = true;
                                   jjtree.openNodeScope(jjtn005);
         try {
@@ -327,10 +327,29 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
                 {
                         String lastGlobal=order.get(order.size()-1);
                         Object ob1=globalVars.get(lastGlobal);
-                        if (ob1.getOperator() == "-")
-                                ob1.setValue("-"+(String) t2.image);
-                        else ob1.setValue((String) t2.image);
-                        globalVars.put(lastGlobal,ob1);
+
+                        if (!ob1.getSize().equals("null") && ob1.getType().equals("array"))
+                        {
+                                if (ob1.getOperator().equals("-"))
+                                        ob1.setValue("-"+(String) t2.image);
+                                else ob1.setValue((String) t2.image);
+
+                                globalVars.put(lastGlobal,ob1);
+
+                        }else if (ob1.getSize().equals("null") && ob1.getType().equals("array"))
+                        {
+                                 error=true;
+                     errorMessage="Array: Uninitialized array : "+(String) t2.image;
+                     System.out.println("ERROR: "+errorMessage);
+                     System.exit(1);
+                        }else
+                        {
+                                if (ob1.getOperator().equals("-"))
+                                        ob1.setValue("-"+(String) t2.image);
+                                else ob1.setValue((String) t2.image);
+
+                                globalVars.put(lastGlobal,ob1);
+                        }
                 }
           System.out.println("Value: "+Integer.parseInt((String) t2.image));
         /*jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image)*/;
@@ -729,7 +748,6 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
 
                         if (!funcParams.containsKey(lastFunc+" "+(String) t1.image))
                     {
-
 
                          Object ob1=new Object((String) t1.image,"array",null);
 
@@ -1242,10 +1260,10 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
   }
 
   static final public void ArraySize() throws ParseException {
-                          /*@bgen(jjtree) aSize */
-                          SimpleNode jjtn000 = new SimpleNode(JJTASIZE);
-                          boolean jjtc000 = true;
-                          jjtree.openNodeScope(jjtn000);Token t1;
+                   /*@bgen(jjtree) ArraySize */
+                   SimpleNode jjtn000 = new SimpleNode(JJTARRAYSIZE);
+                   boolean jjtc000 = true;
+                   jjtree.openNodeScope(jjtn000);Token t1;
     try {
       if (jj_2_32(2)) {
              SimpleNode jjtn001 = new SimpleNode(JJTSCALARACCESS);
@@ -1274,7 +1292,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
         }
       } else if (jj_2_33(2)) {
         t1 = jj_consume_token(INTEGER);
-                          SimpleNode jjtn002 = new SimpleNode(JJTINTEIRO);
+                          SimpleNode jjtn002 = new SimpleNode(JJTINT);
                           boolean jjtc002 = true;
                           jjtree.openNodeScope(jjtn002);
         try {
@@ -1284,12 +1302,13 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
                 {
                         String lastGlobal=order.get(order.size()-1);
                         Object ob1=globalVars.get(lastGlobal);
-                        ob1.setValue((String) t1.image);
+                        ob1.setSize((String) t1.image);
                         globalVars.put(lastGlobal,ob1);
                 }
 
           System.out.println("array size: "+(String)t1.image);
-          jjtn002.arraysize = Integer.parseInt((String)t1.image);
+          /*jjtThis.arraysize = Integer.parseInt((String)t1.image);*/
+
         } finally {
                           if (jjtc002) {
                             jjtree.closeNodeScope(jjtn002, true);
@@ -1925,7 +1944,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
                         Object ob1=globalVars.get((String) t1.image);
                         Object ob2=globalVars.get(lastGlobal);
 
-                        if (ob1.getValue().equals("null"))
+                        if (ob1.getSize().equals("null"))
                         {
                      error=true;
                      errorMessage="ScalarAccess: Invalid var.size: "+(String) t1.image+"."+ob1.getValue();
@@ -1933,7 +1952,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
                      System.exit(1);
                         }
 
-                        ob2.setValue(ob1.getValue());
+                        ob2.setSize(ob1.getValue());
 
                         globalVars.put(lastGlobal,ob2);
                 }
@@ -2322,147 +2341,6 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     finally { jj_save(47, xla); }
   }
 
-  static private boolean jj_3_31() {
-    if (jj_scan_token(31)) return true;
-    if (jj_3R_10()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_5() {
-    if (jj_scan_token(ADDSUB_OP)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_7() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_5()) jj_scanpos = xsp;
-    if (jj_scan_token(INTEGER)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_28() {
-    if (jj_scan_token(ADDSUB_OP)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_44() {
-    if (jj_scan_token(STRING)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_1() {
-    if (jj_3R_6()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_27() {
-    if (jj_scan_token(BITWISE_OP)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_6() {
-    if (jj_scan_token(31)) return true;
-    if (jj_3R_10()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_26() {
-    if (jj_scan_token(ARITH_OP)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_8() {
-    if (jj_scan_token(ASSIGN)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_6()) {
-    jj_scanpos = xsp;
-    if (jj_3_7()) return true;
-    }
-    return false;
-  }
-
-  static private boolean jj_3R_9() {
-    if (jj_scan_token(ID)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_29() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_26()) {
-    jj_scanpos = xsp;
-    if (jj_3_27()) {
-    jj_scanpos = xsp;
-    if (jj_3_28()) return true;
-    }
-    }
-    if (jj_3R_20()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_3() {
-    if (jj_3R_8()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_45() {
-    if (jj_scan_token(INTEGER)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_6() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_3()) {
-    jj_scanpos = xsp;
-    if (jj_3_4()) return true;
-    }
-    xsp = jj_scanpos;
-    if (jj_3_8()) jj_scanpos = xsp;
-    if (jj_scan_token(PVIRG)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_25() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_30()) {
-    jj_scanpos = xsp;
-    if (jj_3_31()) return true;
-    }
-    return false;
-  }
-
-  static private boolean jj_3_41() {
-    if (jj_3R_21()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_30() {
-    if (jj_3R_20()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_29()) jj_scanpos = xsp;
-    return false;
-  }
-
-  static private boolean jj_3_10() {
-    if (jj_3R_11()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_25() {
-    if (jj_3R_19()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_24() {
-    if (jj_3R_18()) return true;
-    return false;
-  }
-
   static private boolean jj_3R_24() {
     Token xsp;
     xsp = jj_scanpos;
@@ -2481,6 +2359,11 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     return false;
   }
 
+  static private boolean jj_3_5() {
+    if (jj_scan_token(ADDSUB_OP)) return true;
+    return false;
+  }
+
   static private boolean jj_3_42() {
     if (jj_scan_token(VIRG)) return true;
     if (jj_3R_22()) return true;
@@ -2492,6 +2375,14 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     return false;
   }
 
+  static private boolean jj_3_7() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_5()) jj_scanpos = xsp;
+    if (jj_scan_token(INTEGER)) return true;
+    return false;
+  }
+
   static private boolean jj_3R_16() {
     if (jj_3R_24()) return true;
     if (jj_scan_token(ASSIGN)) return true;
@@ -2499,13 +2390,48 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     return false;
   }
 
-  static private boolean jj_3_9() {
-    if (jj_3R_11()) return true;
+  static private boolean jj_3_1() {
+    if (jj_3R_6()) return true;
     return false;
   }
 
-  static private boolean jj_3_23() {
-    if (jj_3R_17()) return true;
+  static private boolean jj_3_6() {
+    if (jj_scan_token(31)) return true;
+    if (jj_3R_10()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_8() {
+    if (jj_scan_token(ASSIGN)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_6()) {
+    jj_scanpos = xsp;
+    if (jj_3_7()) return true;
+    }
+    return false;
+  }
+
+  static private boolean jj_3_3() {
+    if (jj_3R_8()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_6() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_3()) {
+    jj_scanpos = xsp;
+    if (jj_3_4()) return true;
+    }
+    xsp = jj_scanpos;
+    if (jj_3_8()) jj_scanpos = xsp;
+    if (jj_scan_token(PVIRG)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_9() {
+    if (jj_3R_11()) return true;
     return false;
   }
 
@@ -2525,6 +2451,11 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
   static private boolean jj_3_40() {
     if (jj_scan_token(33)) return true;
     if (jj_scan_token(ID)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_23() {
+    if (jj_3R_17()) return true;
     return false;
   }
 
@@ -2592,11 +2523,6 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     return false;
   }
 
-  static private boolean jj_3_19() {
-    if (jj_3R_13()) return true;
-    return false;
-  }
-
   static private boolean jj_3_37() {
     if (jj_3R_18()) return true;
     return false;
@@ -2607,8 +2533,18 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     return false;
   }
 
+  static private boolean jj_3_19() {
+    if (jj_3R_13()) return true;
+    return false;
+  }
+
   static private boolean jj_3_18() {
     if (jj_3R_9()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_23() {
+    if (jj_scan_token(LPAR)) return true;
     return false;
   }
 
@@ -2624,11 +2560,6 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     jj_scanpos = xsp;
     if (jj_3_48()) return true;
     }
-    return false;
-  }
-
-  static private boolean jj_3R_23() {
-    if (jj_scan_token(LPAR)) return true;
     return false;
   }
 
@@ -2703,19 +2634,8 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     return false;
   }
 
-  static private boolean jj_3_2() {
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
   static private boolean jj_3_34() {
     if (jj_scan_token(ADDSUB_OP)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_46() {
-    if (jj_scan_token(33)) return true;
-    if (jj_scan_token(SIZE)) return true;
     return false;
   }
 
@@ -2739,8 +2659,9 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     return false;
   }
 
-  static private boolean jj_3_4() {
-    if (jj_3R_9()) return true;
+  static private boolean jj_3_46() {
+    if (jj_scan_token(33)) return true;
+    if (jj_scan_token(SIZE)) return true;
     return false;
   }
 
@@ -2775,15 +2696,20 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     return false;
   }
 
-  static private boolean jj_3R_18() {
-    if (jj_scan_token(ID)) return true;
-    if (jj_scan_token(31)) return true;
-    if (jj_3R_26()) return true;
+  static private boolean jj_3_2() {
+    if (jj_3R_7()) return true;
     return false;
   }
 
   static private boolean jj_3_32() {
     if (jj_3R_19()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_18() {
+    if (jj_scan_token(ID)) return true;
+    if (jj_scan_token(31)) return true;
+    if (jj_3R_26()) return true;
     return false;
   }
 
@@ -2800,6 +2726,99 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     jj_scanpos = xsp;
     if (jj_3_33()) return true;
     }
+    return false;
+  }
+
+  static private boolean jj_3_31() {
+    if (jj_scan_token(31)) return true;
+    if (jj_3R_10()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_4() {
+    if (jj_3R_9()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_44() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_28() {
+    if (jj_scan_token(ADDSUB_OP)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_27() {
+    if (jj_scan_token(BITWISE_OP)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_26() {
+    if (jj_scan_token(ARITH_OP)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_9() {
+    if (jj_scan_token(ID)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_29() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_26()) {
+    jj_scanpos = xsp;
+    if (jj_3_27()) {
+    jj_scanpos = xsp;
+    if (jj_3_28()) return true;
+    }
+    }
+    if (jj_3R_20()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_45() {
+    if (jj_scan_token(INTEGER)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_41() {
+    if (jj_3R_21()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_25() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_30()) {
+    jj_scanpos = xsp;
+    if (jj_3_31()) return true;
+    }
+    return false;
+  }
+
+  static private boolean jj_3_10() {
+    if (jj_3R_11()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_30() {
+    if (jj_3R_20()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_29()) jj_scanpos = xsp;
+    return false;
+  }
+
+  static private boolean jj_3_25() {
+    if (jj_3R_19()) return true;
+    return false;
+  }
+
+  static private boolean jj_3_24() {
+    if (jj_3R_18()) return true;
     return false;
   }
 
