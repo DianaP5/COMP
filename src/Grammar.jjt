@@ -34,13 +34,13 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
       System.out.println("ISTO: " + globalVars.get("ab").getSize());
       System.out.println("ISTO: " + globalVars.get("ab").getValue());
       System.out.println("ISTO: " + globalVars.get("ab").getType());
-*/
+
       System.out.println("ISTO: " + globalVars.get("a").getSize());
       System.out.println("ISTO: " + globalVars.get("a").getValue());
       System.out.println("ISTO: " + globalVars.get("a").getType());
-      System.out.println("ISTO: " + globalVars.get("a").getArray().get(6));
+      System.out.println("ISTO: " + globalVars.get("a").getArray().get(6));*/
       
-            System.out.println("Accepted. " + myYal.eval(root));      /*JVCgenerator g1 = new JVCgenerator("teste");      g1.addModule("nomeModulo");      g1.addVar("variavel", "2");      g1.closeWriter();*/    }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: " + e.getMessage());    }  }  int eval(SimpleNode node)  {    if (node.jjtGetNumChildren() == 0)  // leaf node with integer value
+      System.out.println("Accepted. " + myYal.eval(root));      /*JVCgenerator g1 = new JVCgenerator("teste");      g1.addModule("nomeModulo");      g1.addVar("variavel", "2");      g1.closeWriter();*/    }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: " + e.getMessage());    }  }  int eval(SimpleNode node)  {    if (node.jjtGetNumChildren() == 0)  // leaf node with integer value
     return node.val;    else if (node.jjtGetNumChildren() == 1)  // only one child
     return this.eval((SimpleNode) node.jjtGetChild(0));    SimpleNode lhs = (SimpleNode) node.jjtGetChild(0); //left child
     SimpleNode rhs = (SimpleNode) node.jjtGetChild(1); // right child
@@ -81,7 +81,6 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
   {
     localVar=true;  }
     Lhs() #Lhs < ASSIGN > Rhs() #Rhs < PVIRG >
-
   }void Lhs() #void :{}{  (    ArrayAccess() #ArrayAccess  | ScalarAccess() #ScalarAccess)}void Rhs() #void :{  Token t1;}{  (    (Term() #Term)    (      (t1 = < ARITH_OP > #ARITHOP      | t1 = < BITWISE_OP > #BITWISEOP      | t1 = < ADDSUB_OP > #ADDSUBOP)      (Term() #Term) )?  )  | ("[" ArraySize() #ArraySize "]"
 {
   if (expr == true)  {
@@ -255,7 +254,7 @@ void Argument() #void :{  Token t1, t2, t3;}{
             System.exit(1);
       	}else      	{			order.add((String) t1.image);
       	}    }*/
-        if (localType == 0 || globalVar == true)    {      if (!localVars.containsKey((String) t1.image))      {        if (!funcParams.containsKey((String) t1.image))        {          if (!globalVars.containsKey((String) t1.image))          {            error = true;            errorMessage = "Params: ArrayAccess: Invalid array id: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }          else          {            if (globalVars.get((String) t1.image).getSize().equals("null"))            {              error = true;              errorMessage = "Params: ArrayAccess: Uninitialized array id: " + (String) t1.image;              System.out.println("ERROR: " + errorMessage);              System.exit(1);            }
+        if (localType == 0 || globalVar == true || localVar == true)    {      if (!localVars.containsKey((String) t1.image))      {        if (!funcParams.containsKey((String) t1.image))        {          if (!globalVars.containsKey((String) t1.image))          {            error = true;            errorMessage = "Params: ArrayAccess: Invalid array id: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }          else          {            if (globalVars.get((String) t1.image).getSize().equals("null"))            {              error = true;              errorMessage = "Params: ArrayAccess: Uninitialized array id: " + (String) t1.image;              System.out.println("ERROR: " + errorMessage);              System.exit(1);            }
             order.add((String) t1.image);
             
 			Object ob1=globalVars.get((String) t1.image);
