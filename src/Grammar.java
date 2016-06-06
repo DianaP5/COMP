@@ -25,7 +25,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
 
   private static String globalSignal, filename,errorMessage = "",indexArray="null";
   private static Boolean globalVar = false, funcParam = false, localVar = false, error = false,expr=false,stm=true,arraySize=false,size=false,arrayAccess=false;
-  private static int localType = - 1, nArgs=0;
+  private static int localType = - 1, nArgs=0,aSize=-1;
 
   private static File teste;
 
@@ -70,11 +70,11 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
       System.out.println("ISTO: " + globalVars.get("ab").getSize());
       System.out.println("ISTO: " + globalVars.get("ab").getValue());
       System.out.println("ISTO: " + globalVars.get("ab").getType());
-
+*/
       System.out.println("ISTO: " + globalVars.get("a").getSize());
       System.out.println("ISTO: " + globalVars.get("a").getValue());
       System.out.println("ISTO: " + globalVars.get("a").getType());
-      System.out.println("ISTO: " + globalVars.get("a").getArray().get(2));*/
+      System.out.println("ISTO: " + globalVars.get("a").getArray().get(6));
 
 
       System.out.println("Accepted. " + myYal.eval(root));
@@ -2025,21 +2025,21 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     t1 = jj_consume_token(ID);
     arrayAccess=true;
 
-    if (globalVar == true)
+   /* if (globalVar == true)
     {
-        if (!globalVars.containsKey((String) t1.image))
-        {
-            error = true;
+    	if (!globalVars.containsKey((String) t1.image))
+      	{
+      	    error = true;
             errorMessage = "ArrayAccess: Invalid array id: " + (String) t1.image;
             System.out.println("ERROR: " + errorMessage);
             System.exit(1);
-        }else
-        {
-                        order.add((String) t1.image);
-        }
-    }
+      	}else
+      	{
+			order.add((String) t1.image);
+      	}
+    }*/
 
-    if (localType == 0)
+    if (localType == 0 || globalVar == true)
     {
       if (!localVars.containsKey((String) t1.image))
       {
@@ -2054,35 +2054,45 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
           }
           else
           {
-            if (globalVars.get((String) t1.image).getValue().equals("null"))
+            if (globalVars.get((String) t1.image).getSize().equals("null"))
             {
               error = true;
               errorMessage = "Params: ArrayAccess: Uninitialized array id: " + (String) t1.image;
               System.out.println("ERROR: " + errorMessage);
               System.exit(1);
             }
+            order.add((String) t1.image);
+
+                        Object ob1=globalVars.get((String) t1.image);
+            aSize=Integer.parseInt(ob1.getSize());
           }
         }
         else
         {
-          if (funcParams.get((String) t1.image).getValue().equals("null"))
+          if (funcParams.get((String) t1.image).getSize().equals("null"))
           {
             error = true;
             errorMessage = "Params: ArrayAccess: Uninitialized array id: " + (String) t1.image;
             System.out.println("ERROR: " + errorMessage);
             System.exit(1);
           }
+          order.add((String) t1.image);
+          Object ob1=funcParams.get((String) t1.image);
+            aSize=Integer.parseInt(ob1.getSize());
         }
       }
       else
       {
-        if (localVars.get((String) t1.image).getValue().equals("null"))
+        if (localVars.get((String) t1.image).getSize().equals("null"))
         {
           error = true;
           errorMessage = "Params: ArrayAccess: Uninitialized array id: " + (String) t1.image;
           System.out.println("ERROR: " + errorMessage);
           System.exit(1);
         }
+        order.add((String) t1.image);
+        Object ob1=localVars.get((String) t1.image);
+        aSize=Integer.parseInt(ob1.getSize());
       }
     }
     jj_consume_token(31);
@@ -2296,20 +2306,87 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
       try {
       jjtree.closeNodeScope(jjtn001, true);
       jjtc001 = false;
+      String lastGlobal=order.get(order.size()-1);
+
       if (localType == 0 || globalVar == true)
       {
         if (!localVars.containsKey((String) t1.image))
+        {
+
         if (!funcParams.containsKey((String) t1.image))
+        {
+
         if (!globalVars.containsKey((String) t1.image))
         {
           error = true;
           errorMessage = "Params: index : Invalid scalar id: " + (String) t1.image;
           System.out.println("ERROR: " + errorMessage);
           System.exit(1);
+        }else
+        {
+                Object ob1=globalVars.get((String) t1.image);
+
+                if (!ob1.getType().equals("scalar"))
+                {
+                                error = true;
+                          errorMessage = "Params: index : Invalid type id: must be scalar; Current: " + ob1.getType();
+                          System.out.println("ERROR: " + errorMessage);
+                          System.exit(1);
+                }
+                        if(Integer.parseInt(ob1.getValue()) >= 0 && Integer.parseInt(ob1.getValue()) < aSize)
+                        indexArray=ob1.getValue();
+                else
+                {
+                  error = true;
+                  errorMessage = "ArrayAccess: Invalid index: must be > 0 and < "+aSize+"; Current: " + ob1.getValue();
+                  System.out.println("ERROR: " + errorMessage);
+                  System.exit(1);
+                }
+        }
+      }else {
+                Object ob1=funcParams.get((String) t1.image);
+
+                if (!ob1.getType().equals("scalar"))
+                {
+                                error = true;
+                          errorMessage = "Params: index : Invalid type id: must be scalar; Current: " + ob1.getType();
+                          System.out.println("ERROR: " + errorMessage);
+                          System.exit(1);
+                }
+
+                        if(Integer.parseInt(ob1.getValue()) >= 0 && Integer.parseInt(ob1.getValue()) < aSize)
+                        indexArray=ob1.getValue();
+                else
+                {
+                  error = true;
+                  errorMessage = "ArrayAccess: Invalid index: must be > 0 and < "+aSize+"; Current: " + ob1.getValue();
+                  System.out.println("ERROR: " + errorMessage);
+                  System.exit(1);
+                }
         }
       }
       /*jjtThis.Indice = (String) t1.image;*/
+    }else {
+                Object ob1=localVars.get((String) t1.image);
 
+                if (!ob1.getType().equals("scalar"))
+                {
+                                error = true;
+                          errorMessage = "Params: index : Invalid type id: must be scalar; Current: " + ob1.getType();
+                          System.out.println("ERROR: " + errorMessage);
+                          System.exit(1);
+                }
+
+                        if(Integer.parseInt(ob1.getValue()) >= 0 && Integer.parseInt(ob1.getValue()) < aSize)
+                        indexArray=ob1.getValue();
+                else
+                {
+                  error = true;
+                  errorMessage = "ArrayAccess: Invalid index: must be > 0 and < "+aSize+"; Current: " + ob1.getValue();
+                  System.out.println("ERROR: " + errorMessage);
+                  System.exit(1);
+                }
+        }
       } finally {
       if (jjtc001) {
         jjtree.closeNodeScope(jjtn001, true);
@@ -2323,12 +2400,21 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
       try {
       jjtree.closeNodeScope(jjtn002, true);
       jjtc002 = false;
-        indexArray=(String) t1.image;
+        if(Integer.parseInt((String) t1.image) >= 0 && Integer.parseInt((String) t1.image) < aSize)
+                        indexArray=(String) t1.image;
+        else
+        {
+          error = true;
+          errorMessage = "ArrayAccess: Invalid index: must be > 0 and < "+aSize+"; Current: " + (String) t1.image;
+          System.out.println("ERROR: " + errorMessage);
+          System.exit(1);
+        }
       } finally {
       if (jjtc002) {
         jjtree.closeNodeScope(jjtn002, true);
       }
       }
+                aSize=-1;
     } else {
       jj_consume_token(-1);
       throw new ParseException();
@@ -2696,6 +2782,11 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     return false;
   }
 
+  static private boolean jj_3_50() {
+    if (jj_scan_token(INTEGER)) return true;
+    return false;
+  }
+
   static private boolean jj_3_40() {
     if (jj_3R_12()) return true;
     return false;
@@ -2708,21 +2799,6 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
 
   static private boolean jj_3_25() {
     if (jj_3R_19()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_23() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_49()) {
-    jj_scanpos = xsp;
-    if (jj_3_50()) return true;
-    }
-    return false;
-  }
-
-  static private boolean jj_3_49() {
-    if (jj_scan_token(ID)) return true;
     return false;
   }
 
@@ -3037,6 +3113,12 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     return false;
   }
 
+  static private boolean jj_3_48() {
+    if (jj_scan_token(33)) return true;
+    if (jj_scan_token(SIZE)) return true;
+    return false;
+  }
+
   static private boolean jj_3_28() {
     if (jj_scan_token(ARITH_OP)) return true;
     return false;
@@ -3059,6 +3141,14 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     }
     }
     if (jj_3R_20()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_12() {
+    if (jj_scan_token(ID)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_48()) jj_scanpos = xsp;
     return false;
   }
 
@@ -3092,20 +3182,6 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
 
   static private boolean jj_3R_24() {
     if (jj_scan_token(LPAR)) return true;
-    return false;
-  }
-
-  static private boolean jj_3_48() {
-    if (jj_scan_token(33)) return true;
-    if (jj_scan_token(SIZE)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_12() {
-    if (jj_scan_token(ID)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3_48()) jj_scanpos = xsp;
     return false;
   }
 
@@ -3145,11 +3221,6 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     return false;
   }
 
-  static private boolean jj_3_50() {
-    if (jj_scan_token(INTEGER)) return true;
-    return false;
-  }
-
   static private boolean jj_3R_17() {
     if (jj_scan_token(IF)) return true;
     if (jj_3R_24()) return true;
@@ -3166,6 +3237,21 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_15()) jj_scanpos = xsp;
+    return false;
+  }
+
+  static private boolean jj_3R_23() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_49()) {
+    jj_scanpos = xsp;
+    if (jj_3_50()) return true;
+    }
+    return false;
+  }
+
+  static private boolean jj_3_49() {
+    if (jj_scan_token(ID)) return true;
     return false;
   }
 
