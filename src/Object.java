@@ -8,7 +8,7 @@ public class Object {
 	private String value;
 	private String operator;
 	private String size;
-	private ArrayList<Integer> array;
+	private ArrayList<String> array;
 	
 	Object(String name,String type,String value){
 		this.setName(name);
@@ -16,7 +16,7 @@ public class Object {
 		this.setValue(value);
 		this.setOperator("null");
 		this.setSize("null");
-		this.setArray(new ArrayList<Integer>());
+		this.setArray(new ArrayList<String>());
 	}
 	
 	public String getType() {
@@ -44,7 +44,7 @@ public class Object {
 			return;
 		
 		for (int i = 0; i < Integer.parseInt(this.size); i++)
-			array.add(Integer.parseInt(value));
+			array.add(value);
 	}
 	
 	public String getOperator() {
@@ -67,16 +67,20 @@ public class Object {
 			return;
 		}
 		
-		this.array=new ArrayList<Integer>(Integer.parseInt(size));
+		this.array=new ArrayList<String>(Integer.parseInt(size));
 	}
 	
-	public ArrayList<Integer> getArray() {
+	public ArrayList<String> getArray() {
 		return array;
 	}
-	public void setArray(ArrayList<Integer> arrayList) {
+	public void setArray(ArrayList<String> arrayList) {
 		this.array = arrayList;
 	}
 	
+	public void setIndexValue(String index,String value){
+		int i=Integer.parseInt(index);
+		this.array.set(i,value);
+	}
 	
 
 }
