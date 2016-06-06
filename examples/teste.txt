@@ -1,23 +1,25 @@
 module fields {
 ab;
+g[]=[20];
 b=43;
-a=[7];
+a=[b];
 c=[a.size];
 a=8;
-ab=9;
+ab=a.size;
 
 function y[]=p(f[],p){
 c=3;
 }
 
 function z(ab,b){
-while(k<p(c,2) & 2){
+while(ab <p(c,2) & 7){
+
 }
-c=3;
+d=3+6;
 }
 
 function ffff(){
-c=3;
+d=3+6;
 }
 
 }
