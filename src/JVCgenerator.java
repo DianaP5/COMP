@@ -1,4 +1,7 @@
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
@@ -7,6 +10,12 @@ public class JVCgenerator {
 	
 	private String fileName;
 	private PrintWriter writer;
+	
+	private File f1;
+	private int numLoops = 0, maxLoops = 0;
+	
+	private SimpleNode node;
+	private String moduleName;
 	
 	JVCgenerator(String fileName) throws FileNotFoundException, UnsupportedEncodingException{
 		this.fileName=fileName;
@@ -58,18 +67,39 @@ public class JVCgenerator {
 		
 	}
 	
-	void loops(int NumArgs, String varStack, String operator){
-		writer.println("loop:");
+	void loopwhile(SimpleNode n3, int j, FileOutputStream fich, int tmp) throws IOException {
 
-		for(int i = 0; i<= NumArgs; i++){
-			writer.println("iload_" + varStack);
-		}
+
+		numLoops += tmp;
 		
-		if(operator == "<"){
-			writer.println("if_icmpge loop_end");
-		}
+		if(numLoops > maxLoops)
+			maxLoops=numLoops;
 		
-		//TODO FAZER PARA TODOS OS OPERADORES
+		
+		SimpleNode ExprTest = (SimpleNode)n3.jjtGetChild(0).jjtGetChild(1);
+		SimpleNode Oper = (SimpleNode)ExprTest.jjtGetChild(1);
+
+		String oper = "";
+		
+		if(Oper.operation.toString().equals("=="))
+			oper+="\tif_icmpne loop_end" +  numLoops + "\n";
+		else if(Oper.operation.toString().equals(">="))
+			oper+="\tif_icmplt loop_end" +  numLoops + "\n";
+		else if(Oper.operation.toString().equals(">"))
+			oper+="\tif_icmple loop_end" +  numLoops + "\n";
+		else if(Oper.operation.toString().equals("<="))
+			oper+="\tif_icmpgt loop_end" +  numLoops + "\n";
+		else if(Oper.operation.toString().equals("<"))
+			oper+="\tif_icmpge loop_end" +  numLoops + "\n";
+		else if(Oper.operation.toString().equals("!="))
+			oper+="\tif_icmpeq loop_end" +  numLoops + "\n";		
+		fich.write(oper.getBytes());
+		
+		
+		
+		fich.write(("\tgoto loop"+ numLoops +"\nloop_end" + numLoops +":\n").getBytes());
+		
+		
 		
 	}
 	
