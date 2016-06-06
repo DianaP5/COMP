@@ -44,7 +44,7 @@ public class Object {
 			return;
 		
 		for (int i = 0; i < Integer.parseInt(this.size); i++)
-			array.add(value);
+			array.set(i,value);
 	}
 	
 	public String getOperator() {
@@ -66,8 +66,10 @@ public class Object {
 			System.out.println("SIZE <= 0 ARRAY");
 			return;
 		}
-		
 		this.array=new ArrayList<String>(Integer.parseInt(size));
+
+		for(int i=0; i < Integer.parseInt(this.size); i++)
+			this.array.add("null");
 	}
 	
 	public ArrayList<String> getArray() {
@@ -79,6 +81,8 @@ public class Object {
 	
 	public void setIndexValue(String index,String value){
 		int i=Integer.parseInt(index);
+		System.out.println(this.size+" "+this.size+" "+this.value);
+		
 		this.array.set(i,value);
 	}
 	

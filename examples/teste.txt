@@ -12,20 +12,19 @@ abs=6;
 a[6]=9;
 
 function y[]=p(f[],p){
-c=3;
+k=[abs];
 c=2;
-a[3]=4;
+g[3]=4;
 }
 
 function z(ab,b){
 while(ab <p(a,2) & 7){
 
 }
-d=3+6;
 }
 
 function ffff(){
-d=3+k;
+
 }
 
 }

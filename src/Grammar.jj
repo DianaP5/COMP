@@ -7,10 +7,12 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
   protected static JJTGrammarState jjtree = new JJTGrammarState();
 
 /*@egen*/  /*local vars-> params function-> global vars*/  private static HashMap < String, Object > localVars = new HashMap < String, Object > ();  private static HashMap < String, Object > funcParams = new HashMap < String, Object > ();  private static HashMap < String, Object > globalVars = new HashMap < String, Object > ();
-  private static HashMap < String, Object > funcReturn = new HashMap < String, Object > ();  private static HashMap < String, String > functions = new HashMap < String, String > ();
+  private static HashMap < String, Object > funcReturn = new HashMap < String, Object > ();
+  //function name : return var name  private static HashMap < String, String > functions = new HashMap < String, String > ();
     private static ArrayList < String > order = new ArrayList < String > ();
+  private static ArrayList < String > funcNames = new ArrayList < String > ();
   private static ArrayList < String > tempFuncParamsType = new ArrayList < String > ();  private static ArrayList <String > tempExprType=new ArrayList <String > ();
-    private static String globalSignal, filename,errorMessage = "",indexArray="null";  private static Boolean globalVar = false, funcParam = false, localVar = false, error = false,expr=false,stm=true,arraySize=false,size=false,arrayAccess=false;
+    private static String globalSignal, filename,errorMessage = "",indexArray="null";  private static Boolean globalVar = false, funcParam = false, localVar = false, error = false,expr=false,stm=false,arraySize=false,size=false,arrayAccess=false;
   private static int localType = - 1, nArgs=0,aSize=-1;
   private static File teste;  public static void main(String args []) throws FileNotFoundException  {    File f1 = new File("examples/teste.txt");    if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();      root.dump("");      /* TESTING
       for (int i=0; i < order.size(); i++)
@@ -41,8 +43,12 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
 
       System.out.println("ISTO: " + globalVars.get("a").getSize());
       System.out.println("ISTO: " + globalVars.get("a").getValue());
-      System.out.println("ISTO: " + globalVars.get("a").getType());
-      System.out.println("ISTO: " + globalVars.get("a").getArray().get(6));*/
+      System.out.println("ISTO: " + localVars.get("p c").getValue());
+      System.out.println("ISTO: " + globalVars.get("a").getArray().get(6));
+      
+      System.out.println("ISTO: " + localVars.get("p"+" "+"k").getSize());
+  
+      System.out.println("ISTO: " + globalVars.get("g").getArray().get(3));*/
       
       System.out.println("Accepted. " + myYal.eval(root));      /*JVCgenerator g1 = new JVCgenerator("teste");      g1.addModule("nomeModulo");      g1.addVar("variavel", "2");      g1.closeWriter();*/    }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: " + e.getMessage());    }  }  int eval(SimpleNode node)  {    if (node.jjtGetNumChildren() == 0)  // leaf node with integer value
     return node.val;    else if (node.jjtGetNumChildren() == 1)  // only one child
@@ -68,7 +74,7 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
     jjtree.closeNodeScope(jjtn001, true);
     jjtc001 = false;
   }
-/*@egen*/  {    jjtn001.module = (String) t1.image;    System.out.println("MODULE: " + t1.image);    globalVar = true;  }/*@bgen(jjtree)*/
+/*@egen*/  {    //jjtThis.module = (String) t1.image;    System.out.println("MODULE: " + t1.image);    globalVar = true;  }/*@bgen(jjtree)*/
   } finally {
     if (jjtc001) {
       jjtree.closeNodeScope(jjtn001, true);
@@ -157,6 +163,7 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
 void Declaration()       :{  Token t1, t2;}{
 
   {
+    
   arraySize=false;
 }  (
     LOOKAHEAD(3)/*@bgen(jjtree) ArrayAccess */
@@ -279,7 +286,13 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
         jjtree.closeNodeScope(jjtn005, true);
         jjtc005 = false;
       }
-/*@egen*/      {        if (globalVar == true)        {          String lastGlobal = order.get(order.size() - 1);          Object ob1 = globalVars.get(lastGlobal);          ob1.setOperator((String) t1.image);          globalVars.put(lastGlobal, ob1);        }        System.out.println("operator: " + (String) t1.image);        // jjtThis.val2 = (String) t1.image; globalSignal = (String) t1.image;
+/*@egen*/      {        if (globalVar == true)        {          String lastGlobal = order.get(order.size() - 1);          Object ob1 = globalVars.get(lastGlobal);          ob1.setOperator((String) t1.image);          globalVars.put(lastGlobal, ob1);        }else if (localVar == true)        {   		  String lastLocal = order.get(order.size() - 1);
+   		  String lastFunc=funcNames.get(funcNames.size()-1);
+   		  
+          Object ob1 = localVars.get(lastFunc+" "+lastLocal);
+          ob1.setOperator((String) t1.image);
+          localVars.put(lastFunc+" "+lastLocal, ob1);
+        }        System.out.println("operator: " + (String) t1.image);        // jjtThis.val2 = (String) t1.image; globalSignal = (String) t1.image;
       }/*@bgen(jjtree)*/
       } finally {
         if (jjtc005) {
@@ -298,16 +311,98 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
         jjtree.closeNodeScope(jjtn006, true);
         jjtc006 = false;
       }
-/*@egen*/      {        if (globalVar == true)        {          String lastGlobal = order.get(order.size() - 1);          Object ob1 = globalVars.get(lastGlobal);          if (!ob1.getSize().equals("null") && ob1.getType().equals("array"))          {
+/*@egen*/      {
+        System.out.println(globalVar+" "+localVar);
+        
+        if (globalVar == true)        {          String lastGlobal = order.get(order.size() - 1);          Object ob1 = globalVars.get(lastGlobal);          if (!ob1.getSize().equals("null") && ob1.getType().equals("array"))          {
             if (!indexArray.equals("null"))
             {
-            	ob1.setIndexValue(indexArray,(String) t2.image);              }else            {              
-                        if (ob1.getOperator().equals("-"))             ob1.setValue("-" + (String) t2.image);            else ob1.setValue((String) t2.image);            globalVars.put(lastGlobal, ob1);
+            	ob1.setIndexValue(indexArray,(String) t2.image);              }else            {            if (ob1.getOperator().equals("-"))             ob1.setValue("-" + (String) t2.image);            else ob1.setValue((String) t2.image);            globalVars.put(lastGlobal, ob1);
           }          }          else if (ob1.getSize().equals("null") && ob1.getType().equals("array"))          {
           	ob1.setType("scalar");            if (ob1.getOperator().equals("-")) 
             ob1.setValue("-" + (String) t2.image);
             else ob1.setValue((String) t2.image);
-            globalVars.put(lastGlobal, ob1);          }          else          {            if (ob1.getOperator().equals("-"))             ob1.setValue("-" + (String) t2.image);            else ob1.setValue((String) t2.image);            globalVars.put(lastGlobal, ob1);          }        }        System.out.println("Value: " + Integer.parseInt((String) t2.image));        /*jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image)*/        ;      }/*@bgen(jjtree)*/
+            globalVars.put(lastGlobal, ob1);          }          else          {            if (ob1.getOperator().equals("-"))             ob1.setValue("-" + (String) t2.image);            else ob1.setValue((String) t2.image);            globalVars.put(lastGlobal, ob1);          }        }else if (localVar == true)
+        {
+          String lastGlobal = order.get(order.size() - 1);
+          
+          if (globalVars.containsKey(lastGlobal))          {
+				//String lastGlobal = order.get(order.size() - 1);
+          Object ob1 = globalVars.get(lastGlobal);
+          if (!ob1.getSize().equals("null") && ob1.getType().equals("array"))
+          {
+            
+            if (!indexArray.equals("null"))
+            {
+            System.out.println("ggggggggggg "+lastGlobal+" "+indexArray+" "+indexArray+" "+(String) t2.image);
+            
+            	ob1.setIndexValue(indexArray,(String) t2.image);
+            	
+            }else
+            {
+            if (ob1.getOperator().equals("-")) 
+            ob1.setValue("-" + (String) t2.image);
+            else ob1.setValue((String) t2.image);
+            globalVars.put(lastGlobal, ob1);
+          }
+          }
+          else if (ob1.getSize().equals("null") && ob1.getType().equals("array"))
+          {
+          	ob1.setType("scalar");
+            if (ob1.getOperator().equals("-")) 
+            ob1.setValue("-" + (String) t2.image);
+            else ob1.setValue((String) t2.image);
+            globalVars.put(lastGlobal, ob1);
+          }
+          else
+          {
+            if (ob1.getOperator().equals("-")) 
+            ob1.setValue("-" + (String) t2.image);
+            else ob1.setValue((String) t2.image);
+            globalVars.put(lastGlobal, ob1);
+          }
+			
+                      }else          {            
+          
+		  String lastFunc=funcNames.get(funcNames.size()-1);
+          String lastLocal = order.get(order.size() - 1);
+          Object ob1 = localVars.get(lastFunc+" "+lastLocal);
+
+          if (!ob1.getSize().equals("null") && ob1.getType().equals("array"))
+          {
+            
+            
+            if (!indexArray.equals("null"))
+            {
+            	ob1.setIndexValue(indexArray,(String) t2.image);  
+            }else
+            {
+              
+            
+            if (ob1.getOperator().equals("-")) 
+            ob1.setValue("-" + (String) t2.image);
+            else ob1.setValue((String) t2.image);
+            localVars.put(lastFunc+" "+lastLocal, ob1);
+          }
+          }
+          else if (ob1.getSize().equals("null") && ob1.getType().equals("array"))
+          {
+          	ob1.setType("scalar");
+            if (ob1.getOperator().equals("-")) 
+            ob1.setValue("-" + (String) t2.image);
+            else ob1.setValue((String) t2.image);
+            localVars.put(lastFunc+" "+lastLocal, ob1);
+          }
+          else
+          {
+            if (ob1.getOperator().equals("-")) 
+            ob1.setValue("-" + (String) t2.image);
+            else ob1.setValue((String) t2.image);
+            localVars.put(lastFunc+" "+lastLocal, ob1);
+          }
+        }
+        }        System.out.println("Value: " + Integer.parseInt((String) t2.image));
+        indexArray="null";        /*jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image)*/        ;      }/*@bgen(jjtree)*/
       } finally {
         if (jjtc006) {
           jjtree.closeNodeScope(jjtn006, true);
@@ -377,7 +472,8 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
             jjtree.closeNodeScope(jjtn001, true);
           }
         }
-/*@egen*/            )      < ASSIGN > t1 = < ID >      {        if (!functions.containsKey((String) t1.image))        {          String lastReturn = order.get(order.size() - 1);          String returnName = funcReturn.get(lastReturn).getName();          functions.put((String) t1.image, returnName);          order.add((String) t1.image);        }        else        {          error = true;          errorMessage = "Functions with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }        System.out.println("func assign id: " + (String) t1.image);      }      < LPAR >      (/*@bgen(jjtree) VarList */
+/*@egen*/            )      < ASSIGN > t1 = < ID >      {        if (!functions.containsKey((String) t1.image))        {          String lastReturn = order.get(order.size() - 1);          String returnName = funcReturn.get(lastReturn).getName();          functions.put((String) t1.image, returnName);          order.add((String) t1.image);
+          funcNames.add((String) t1.image);        }        else        {          error = true;          errorMessage = "Functions with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }        System.out.println("func assign id: " + (String) t1.image);      }      < LPAR >      (/*@bgen(jjtree) VarList */
         {
           SimpleNode jjtn002 = new SimpleNode(JJTVARLIST);
           boolean jjtc002 = true;
@@ -404,7 +500,8 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
             jjtree.closeNodeScope(jjtn002, true);
           }
         }
-/*@egen*/         )?      < RPAR >    )  |    (      < FUNCTION > t1 = < ID >      {        if (!functions.containsKey((String) t1.image))        {          String lastReturn = order.get(order.size() - 1);          functions.put((String) t1.image, "null");          order.add((String) t1.image);        }        else        {          error = true;          errorMessage = "Functions with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }        System.out.println("func id: " + (String) t1.image);      }      < LPAR >      (/*@bgen(jjtree) VarList */
+/*@egen*/         )?      < RPAR >    )  |    (      < FUNCTION > t1 = < ID >      {        if (!functions.containsKey((String) t1.image))        {          String lastReturn = order.get(order.size() - 1);          functions.put((String) t1.image, "null");          order.add((String) t1.image);
+          funcNames.add((String) t1.image);        }        else        {          error = true;          errorMessage = "Functions with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }        System.out.println("func id: " + (String) t1.image);      }      < LPAR >      (/*@bgen(jjtree) VarList */
         {
           SimpleNode jjtn003 = new SimpleNode(JJTVARLIST);
           boolean jjtc003 = true;
@@ -605,7 +702,11 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
         jjtree.closeNodeScope(jjtn004, true);
       }
     }
-/*@egen*/        ))*}void ArrayElement()       :{  Token t1;}{  (    t1 = < ID >/*@bgen(jjtree) ID */
+/*@egen*/        ))*}void ArrayElement()       :{  Token t1;}{
+  {    
+  if (expr == true)
+  	return;}
+  (    t1 = < ID >/*@bgen(jjtree) ID */
     {
       SimpleNode jjtn001 = new SimpleNode(JJTID);
       boolean jjtc001 = true;
@@ -618,14 +719,41 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
       jjtc001 = false;
     }
 /*@egen*/    {      if (globalVar == true)      {        if (!globalVars.containsKey((String) t1.image))        {          Object ob1 = new Object((String) t1.image, "array", "null");          globalVars.put((String) t1.image, ob1);          order.add((String) t1.image);        }        else        {          error = true;          errorMessage = "Array: Global var with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }      }      else if (funcParam == true)      {        String lastFunc = order.get(order.size() - 1);        if (!funcParams.containsKey(lastFunc + " " + (String) t1.image))        {          Object ob1 = new Object((String) t1.image, "array", "null");          funcParams.put(lastFunc + " " + (String) t1.image, ob1);          System.out.println("Array: Func param id: " + (String) t1.image);          //order.add((String) t1.image);
-        }        else        {          error = true;          errorMessage = "Array: Function param with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }      }      System.out.println("array id: " + (String) t1.image);      //jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;
-    }/*@bgen(jjtree)*/
+        }        else        {          error = true;          errorMessage = "Array: Function param with same id: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }      }else if (localVar == true)
+      {
+        if (funcParams.containsKey((String) t1.image))
+        {			error = true;
+          errorMessage = "Array: Function param with same id: " + (String) t1.image;
+          System.out.println("ERROR: " + errorMessage);
+          System.exit(1);
+        }
+        
+        if (!localVars.containsKey((String) t1.image))
+        {
+          Object ob1 = new Object((String) t1.image, "array", "null");
+          String func=funcNames.get(funcNames.size()-1);
+          localVars.put(func+" "+(String) t1.image, ob1);
+          order.add((String) t1.image);
+        }
+        else
+        {
+          error = true;
+          errorMessage = "Array: Local var with same id: " + (String) t1.image;
+          System.out.println("ERROR: " + errorMessage);
+          System.exit(1);
+        }
+      }      System.out.println("array id: " + (String) t1.image);    }/*@bgen(jjtree)*/
     } finally {
       if (jjtc001) {
         jjtree.closeNodeScope(jjtn001, true);
       }
     }
-/*@egen*/       )  ("[" "]"  )}void ScalarElement()       :{  Token t1;}{  (    t1 = < ID >/*@bgen(jjtree) ID */
+/*@egen*/       )  ("[" "]"  )}void ScalarElement()       :{  Token t1;}{
+    {
+    
+  if (expr == true)
+  	return;
+}  (    t1 = < ID >/*@bgen(jjtree) ID */
     {
       SimpleNode jjtn001 = new SimpleNode(JJTID);
       boolean jjtc001 = true;
@@ -638,16 +766,53 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
       jjtc001 = false;
     }
 /*@egen*/    {
-            if (globalVar == true)      {        if (!globalVars.containsKey((String) t1.image))        {          Object ob1 = new Object((String) t1.image, "scalar", "null");          globalVars.put((String) t1.image, ob1);          order.add((String) t1.image);        }        else        {          Object ob1 = globalVars.get((String) t1.image);        /*  if (ob1.getType().equals("scalar"))          {            error = true;            errorMessage = "Scalar: Global var with same name: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }*/
+            if (globalVar == true)      {        if (!globalVars.containsKey((String) t1.image))        {          Object ob1 = new Object((String) t1.image, "scalar", "null");          globalVars.put((String) t1.image, ob1);          order.add((String) t1.image);        }        else        {         /* Object ob1 = globalVars.get((String) t1.image);          if (ob1.getType().equals("scalar"))          {            error = true;            errorMessage = "Scalar: Global var with same name: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }*/
                     order.add((String) t1.image);        }      }      if (funcParam == true)      {        String lastFunc = order.get(order.size() - 1);        if (!funcParams.containsKey(lastFunc + " " + (String) t1.image))        {          Object ob1 = new Object((String) t1.image, "scalar", "null");          funcParams.put(lastFunc + " " + (String) t1.image, ob1);          System.out.println("Scalar: Func param id: " + (String) t1.image);          //order.add((String) t1.image);
-        }        else        {          error = true;          errorMessage = "Scalar: Function param with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }      }      System.out.println("Scalar id: " + (String) t1.image);      //jjtThis.globalVar = (String) t1.image; declaration = (String) t1.image;
-    }/*@bgen(jjtree)*/
+        }        else        {          error = true;          errorMessage = "Scalar: Function param with same id: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }      }
+		
+      if (localVar == true && funcParam == false)
+      {
+
+		String lastFunc=funcNames.get(funcNames.size()-1);
+		
+        if (funcParams.containsKey(lastFunc+" "+(String) t1.image))
+        {
+			error = true;
+          errorMessage = "Scalar: Function param with same id: " +" "+funcParam+" "+ (String) t1.image;
+          System.out.println("ERROR: " + errorMessage);
+          System.exit(1);
+        }
+        
+        if (!localVars.containsKey((String) t1.image))
+        {
+          Object ob1 = new Object((String) t1.image, "scalar", "null");
+          String func=funcNames.get(funcNames.size()-1);
+          localVars.put(func+" "+(String) t1.image, ob1);
+          order.add((String) t1.image);
+           System.out.println("Scalar: func local id: " + (String) t1.image);
+        }
+        else
+        {
+         /* Object ob1 = globalVars.get((String) t1.image);
+          if (ob1.getType().equals("scalar"))
+          {
+            error = true;
+            errorMessage = "Scalar: Global var with same name: " + (String) t1.image;
+            System.out.println("ERROR: " + errorMessage);
+            System.exit(1);
+          }*/
+          
+          order.add((String) t1.image);
+        }
+      }
+            System.out.println("Scalar id: " + (String) t1.image);    }/*@bgen(jjtree)*/
     } finally {
       if (jjtc001) {
         jjtree.closeNodeScope(jjtn001, true);
       }
     }
-/*@egen*/       )}void Stmtlst()       :{}{
+/*@egen*/
+       )}void Stmtlst()       :{}{
   {
     expr=false;  }  (/*@bgen(jjtree) Stmt */
     {
@@ -732,41 +897,46 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
       jjtree.closeNodeScope(jjtn002, true);
     }
   }
-/*@egen*/    | LOOKAHEAD(3)(/*@bgen(jjtree) ASSIGN */
-  {
-    SimpleNode jjtn003 = new SimpleNode(JJTASSIGN);
-    boolean jjtc003 = true;
-    jjtree.openNodeScope(jjtn003);
+/*@egen*/    
+| LOOKAHEAD(3)(
+{
+  localVar=true;
+}/*@bgen(jjtree) DECLARATION */
+{
+  SimpleNode jjtn003 = new SimpleNode(JJTDECLARATION);
+  boolean jjtc003 = true;
+  jjtree.openNodeScope(jjtn003);
+}
+try {
+/*@egen*/
+Declaration()/*@bgen(jjtree)*/
+} catch (Throwable jjte003) {
+  if (jjtc003) {
+    jjtree.clearNodeScope(jjtn003);
+    jjtc003 = false;
+  } else {
+    jjtree.popNode();
   }
-  try {
-/*@egen*/  Assign()/*@bgen(jjtree)*/
-  } catch (Throwable jjte003) {
-    if (jjtc003) {
-      jjtree.clearNodeScope(jjtn003);
-      jjtc003 = false;
-    } else {
-      jjtree.popNode();
-    }
-    if (jjte003 instanceof RuntimeException) {
-      throw (RuntimeException)jjte003;
-    }
-    if (jjte003 instanceof ParseException) {
-      throw (ParseException)jjte003;
-    }
-    throw (Error)jjte003;
-  } finally {
-    if (jjtc003) {
-      jjtree.closeNodeScope(jjtn003, true);
-    }
+  if (jjte003 instanceof RuntimeException) {
+    throw (RuntimeException)jjte003;
   }
-/*@egen*/        )|/*@bgen(jjtree) CALL */
+  if (jjte003 instanceof ParseException) {
+    throw (ParseException)jjte003;
+  }
+  throw (Error)jjte003;
+} finally {
+  if (jjtc003) {
+    jjtree.closeNodeScope(jjtn003, true);
+  }
+}
+/*@egen*/             )| LOOKAHEAD(3)(/*@bgen(jjtree) ASSIGN */
   {
-    SimpleNode jjtn004 = new SimpleNode(JJTCALL);
+    SimpleNode jjtn004 = new SimpleNode(JJTASSIGN);
     boolean jjtc004 = true;
     jjtree.openNodeScope(jjtn004);
   }
   try {
-/*@egen*/ Call()/*@bgen(jjtree)*/
+/*@egen*/  Assign()/*@bgen(jjtree)*/
   } catch (Throwable jjte004) {
     if (jjtc004) {
       jjtree.clearNodeScope(jjtn004);
@@ -786,7 +956,35 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
       jjtree.closeNodeScope(jjtn004, true);
     }
   }
-/*@egen*/       < PVIRG >}void Assign()         :{/*@bgen(jjtree) assign */
+/*@egen*/        )|/*@bgen(jjtree) CALL */
+  {
+    SimpleNode jjtn005 = new SimpleNode(JJTCALL);
+    boolean jjtc005 = true;
+    jjtree.openNodeScope(jjtn005);
+  }
+  try {
+/*@egen*/ Call()/*@bgen(jjtree)*/
+  } catch (Throwable jjte005) {
+    if (jjtc005) {
+      jjtree.clearNodeScope(jjtn005);
+      jjtc005 = false;
+    } else {
+      jjtree.popNode();
+    }
+    if (jjte005 instanceof RuntimeException) {
+      throw (RuntimeException)jjte005;
+    }
+    if (jjte005 instanceof ParseException) {
+      throw (ParseException)jjte005;
+    }
+    throw (Error)jjte005;
+  } finally {
+    if (jjtc005) {
+      jjtree.closeNodeScope(jjtn005, true);
+    }
+  }
+/*@egen*/      
+< PVIRG >}void Assign()         :{/*@bgen(jjtree) assign */
   SimpleNode jjtn000 = new SimpleNode(JJTASSIGN);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
@@ -850,6 +1048,14 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
                           }
                         }
 /*@egen*/      < PVIRG >/*@bgen(jjtree)*/
+  {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtc000 = false;
+  }
+/*@egen*/
+
+  {    localVar=false;
+  }/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -869,8 +1075,7 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
       jjtree.closeNodeScope(jjtn000, true);
     }
   }
-/*@egen*/
-  }void Lhs()       :{}{  (/*@bgen(jjtree) ArrayAccess */
+/*@egen*/}void Lhs()       :{}{  (/*@bgen(jjtree) ArrayAccess */
     {
       SimpleNode jjtn001 = new SimpleNode(JJTARRAYACCESS);
       boolean jjtc001 = true;
@@ -1057,9 +1262,9 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
     try {
 /*@egen*/    {
     arraySize=true;
-
-    if (arrayAccess == true)
-    	return;
+	//System.out.println("arrayACESS");
+   // if (arrayAccess == true)
+    //	return;
   }
   
   (    (/*@bgen(jjtree) ScalarAccess */
@@ -1102,7 +1307,18 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
       jjtc002 = false;
     }
 /*@egen*/    {      if (globalVar == true)      {        String lastGlobal = order.get(order.size() - 1);        Object ob1 = globalVars.get(lastGlobal);        ob1.setSize((String) t1.image);
-        ob1.setType("array");        globalVars.put(lastGlobal, ob1);      }      System.out.println("array size: " + (String) t1.image);      /*jjtThis.arraysize = Integer.parseInt((String)t1.image);*/    }/*@bgen(jjtree)*/
+        ob1.setType("array");        globalVars.put(lastGlobal, ob1);      }else if (localVar == true)
+      {
+        
+        String lastLocal = order.get(order.size() - 1);
+        String lastFunc=funcNames.get(funcNames.size()-1);
+      
+        Object ob1 = localVars.get(lastFunc+" "+lastLocal);
+        ob1.setSize((String) t1.image);
+        ob1.setType("array");
+        globalVars.put(lastLocal, ob1);
+      }
+            System.out.println("array size: " + (String) t1.image);      /*jjtThis.arraysize = Integer.parseInt((String)t1.image);*/    }/*@bgen(jjtree)*/
     } finally {
       if (jjtc002) {
         jjtree.closeNodeScope(jjtn002, true);
@@ -1474,7 +1690,8 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
   }
 /*@egen*/}void Exprtest()       :{  Token t1;}{
   {
-    expr=true;  }  < LPAR >/*@bgen(jjtree) Lhs */
+    expr=true;
+  }  < LPAR >/*@bgen(jjtree) Lhs */
            {
              SimpleNode jjtn001 = new SimpleNode(JJTLHS);
              boolean jjtc001 = true;
@@ -1819,9 +2036,14 @@ void Argument()       :{  Token t1, t2, t3;}{
   {
     tempExprType.add("array");
   }
+  
   	if (stm == true)
   		order.add((String) t1.image);
-  }}void ScalarAccess()       :{  Token t1;}{  t1 = < ID >  (    "."    (      < SIZE >/*@bgen(jjtree) size */
+
+  	arrayAccess=false;
+  }}void ScalarAccess()       :{  Token t1;}
+{
+    t1 = < ID >  (    "."    (      < SIZE >/*@bgen(jjtree) size */
       {
         SimpleNode jjtn001 = new SimpleNode(JJTSIZE);
         boolean jjtc001 = true;
@@ -1845,7 +2067,7 @@ void Argument()       :{  Token t1, t2, t3;}{
           if (arraySize == true)          {            ob2.setType("array");			ob2.setSize(ob1.getSize());
 		  }else ob2.setValue(ob1.getSize());
 		  
-          globalVars.put(lastGlobal, ob2);        }        else if (localType == 0)        {          if (!localVars.containsKey((String) t1.image))           if (!funcParams.containsKey((String) t1.image))           if (!globalVars.containsKey((String) t1.image))          {            error = true;            errorMessage = "Params: ScalarAccess: Invalid var.size: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }        }        //  jjtThis.ScalarA = (String) t1.image;
+          globalVars.put(lastGlobal, ob2);        }        else if (localType == 0)        {          if (!localVars.containsKey((String) t1.image))           if (!funcParams.containsKey((String) t1.image))           if (!globalVars.containsKey((String) t1.image))          {            error = true;            errorMessage = "Params: ScalarAccess: Invalid var.size: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }        }
       }/*@bgen(jjtree)*/
       } finally {
         if (jjtc001) {
@@ -1855,6 +2077,11 @@ void Argument()       :{  Token t1, t2, t3;}{
 /*@egen*/           )  )?
 
 	{
+
+	  {
+		System.out.println(size+" "+globalVar+" "+localVar);
+	  }
+	  
 	  if (size == false)
 	  {
 	if (globalVar == true)
@@ -1891,7 +2118,78 @@ void Argument()       :{  Token t1, t2, t3;}{
 
           globalVars.put(lastGlobal, ob2);
           
+        }else if (localVar == true && expr == false)
+        {
+			String lastFunc=funcNames.get(funcNames.size()-1);
+			System.out.println(lastFunc+" "+(String) t1.image);
+			
+          if (!localVars.containsKey(lastFunc+" "+(String) t1.image))
+          {            
+          if (!globalVars.containsKey((String) t1.image))
+          {
+            error = true;
+            errorMessage = "ScalarAccess: Invalid scalar id: " + (String) t1.image;
+            System.out.println("ERROR: " + errorMessage);
+            System.exit(1);
+          }
+
+			
+
+ 			String lastLocal = order.get(order.size() - 1);
+            Object ob1 = globalVars.get((String) t1.image);
+            Object ob2 = localVars.get(lastFunc+" "+lastLocal);
+
+			System.out.println(lastLocal+" "+(String) t1.image);
+			
+          	if (!ob1.getType().equals("scalar"))
+          {
+            error = true;
+            errorMessage = "ScalarAccess: Invalid var type. Must be scalar type. Current is: "+ ob1.getType();
+            System.out.println("ERROR: " + errorMessage);
+            System.exit(1);
+          }
+          if (ob1.getValue().equals("null"))
+          {
+            error = true;
+            errorMessage = "ScalarAccess: Uninitialized var: " + ob1.getName() +"; value: "+ ob1.getValue();
+            System.out.println("ERROR: " + errorMessage);
+            System.exit(1);
+          }
+          ob2.setSize(ob1.getValue());
+
+          if (arraySize == true)
+          	ob2.setType("array");
+
+          globalVars.put(lastLocal, ob2);
+          
         }
+      }/*else      {
+        String lastFunc=funcNames.get(funcNames.size()-1);
+        			String lastLocal = order.get(order.size() - 1);
+            Object ob1 = localVars.get(lastFunc+" "+(String) t1.image);
+            Object ob2 = localVars.get(lastFunc+" "+lastLocal);
+
+          	if (!ob1.getType().equals("scalar"))
+          {
+            error = true;
+            errorMessage = "ScalarAccess: Invalid var type. Must be scalar type. Current is: "+ ob1.getType();
+            System.out.println("ERROR: " + errorMessage);
+            System.exit(1);
+          }
+          if (ob1.getValue().equals("null"))
+          {
+            error = true;
+            errorMessage = "ScalarAccess: Uninitialized var: " + ob1.getName() +"; value: "+ ob1.getValue();
+            System.out.println("ERROR: " + errorMessage);
+            System.exit(1);
+          }
+          ob2.setSize(ob1.getValue());
+
+          if (arraySize == true)
+          	ob2.setType("array");
+
+          localVars.put(lastFunc+" "+lastLocal, ob2);
+      }*/
   }	}
   {	if (expr == true)	{
 	  if (!localVars.containsKey((String) t1.image))
@@ -1945,6 +2243,9 @@ void Argument()       :{  Token t1, t2, t3;}{
 
 	if (stm == true)
 		order.add((String) t1.image);
+
+		
+        size=false;
   }}void Index()       :{  Token t1;}{  (    t1 = < ID >/*@bgen(jjtree) ID */
     {
       SimpleNode jjtn001 = new SimpleNode(JJTID);
