@@ -11,7 +11,6 @@ public class JVCgenerator {
 	private String fileName;
 	private PrintWriter writer;
 	
-	private File f1;
 	private int numLoops = 0, maxLoops = 0;
 	
 	private SimpleNode node;
@@ -125,6 +124,9 @@ public class JVCgenerator {
 	void saveArray(int arrayPos) {
 		writer.println("iload_" + arrayPos);
 	}
+	void saveArray(String module, String arrName) {
+		writer.println("getstatic " + module + "/" + arrName + " [I");
+	}
 	
 	void loadArray() {
 		writer.println("iaload");
@@ -134,12 +136,15 @@ public class JVCgenerator {
 	void loadScalar(int scalar) {
 		writer.println("iload_" + scalar);
 	}
+	void loadScalar(String module, String varName) {
+		writer.println("getstatic " + module + "/" + varName + " I");
+	}
 	
 	void saveToScalar(int scalar) {
 		writer.println("istore_" + scalar);
 	}
 	void saveToScalar(String module, String varName) {
-		writer.println("putstatic " + module + "/" + varName + " |");
+		writer.println("putstatic " + module + "/" + varName + " I");
 	}
 	
 	//load integer to stack
@@ -171,38 +176,4 @@ public class JVCgenerator {
             writer.println(moduleName + "/" + funcName + "(" +callArgs + ")" + funcReturn);
 		}
     }
-	
-void rhs(String operation){
-		
-		if (operation == "+")
-			writer.println("iadd");
-		
-		else if (operation == "-")
-			writer.println("isub\n");
-		
-		else if (operation == "*")
-			writer.println("imul\n");
-		
-		else if (operation == "/")
-			writer.println("idiv\n");
-		
-		else if (operation == "&")
-			writer.println("iand\n");
-		
-		else if (operation == "|")
-			writer.println("ior\n");
-		
-		else if (operation == "^")
-			writer.println("ixor\n");
-		
-		else if (operation == "<<")
-			writer.println("ishl\n");
-		
-		else if (operation == ">>")
-			writer.println("ishr\n");
-
-		else if (operation == ">>>")
-			writer.println("iushr\n");
-	
-	}
 }
