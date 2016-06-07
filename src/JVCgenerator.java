@@ -132,6 +132,10 @@ public class JVCgenerator {
 		writer.println("iaload");
 	}
 	
+	void saveToArray(){
+		writer.println("iastore");
+	}
+	
 	//scalarAccess
 	void loadScalar(int scalar) {
 		writer.println("iload_" + scalar);

@@ -48,11 +48,12 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
       System.out.println("ISTO: " + localVars.get("p l").getValue());
       System.out.println("ISTO: " + globalVars.get("u").getValue());
       System.out.println("ISTO: " + globalVars.get("y").getValue());
-      
-      System.out.println("ISTO: " + localVars.get("p"+" "+"k").getSize());
-  
-      System.out.println("ISTO: " + globalVars.get("g").getArray().get(3));
       */
+      System.out.println("ISTO: " + localVars.get("p u").getValue());
+	    System.out.println("ISTO: " + localVars.get("p y").getValue());
+    
+      System.out.println("ISTO: " + globalVars.get("g").getArray().get(3));
+      
 
 	LinkedHashMap < String, Object > hash=filterFunc(funcParams,"p");
 
@@ -80,7 +81,7 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
                 if (e.getKey().startsWith(func)) {
                   Object ob1=hash.get(e.getKey());
 
-                        newHash.put(ob1.getName(),ob1);
+                        newHash.put(e.getKey(),ob1);
                 }
         }
         return newHash;
@@ -90,8 +91,9 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
     int counter=0;
     
      for (Entry<String, Object> e : hash.entrySet())     {       
-         if (e.getKey().equals(key))
-            break;
+         if (e.getKey().equals(key))         {			System.out.println("index: " + counter + "value: " + e.getKey());
+			break;
+       }
                   
      counter ++;
    }
@@ -121,7 +123,11 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
         if (globalVar == true)        {          String lastGlobal = order.get(order.size() - 1);          Object ob1 = globalVars.get(lastGlobal);          if (!ob1.getSize().equals("null") && ob1.getType().equals("array"))          {
             if (!indexArray.equals("null"))
             {
-            	ob1.setIndexValue(indexArray,(String) t2.image);              }else            {            if (ob1.getOperator().equals("-"))             ob1.setValue("-" + (String) t2.image);            else ob1.setValue((String) t2.image);            globalVars.put(lastGlobal, ob1);
+            	ob1.setIndexValue(indexArray,(String) t2.image);
+            	gen.saveArray(moduleName,lastGlobal);
+            	gen.saveIndex(Integer.parseInt(indexArray));
+            	gen.loadInt(Integer.parseInt((String) t2.image));
+            	gen.saveToArray();            }else            {            if (ob1.getOperator().equals("-"))             ob1.setValue("-" + (String) t2.image);            else ob1.setValue((String) t2.image);            globalVars.put(lastGlobal, ob1);
           }          }          else if (ob1.getSize().equals("null") && ob1.getType().equals("array"))          {
           	ob1.setType("scalar");            if (ob1.getOperator().equals("-")) 
             ob1.setValue("-" + (String) t2.image);
@@ -217,12 +223,11 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
 		  LinkedHashMap < String, Object > hashParams=filterFunc(funcParams,func);
 		  LinkedHashMap < String, Object > hashLocals=filterFunc(localVars,func);
 
-		  int pos = hashParams.size() + (hashLocals.size() - (getIndex(hashLocals,lastGlobal)+1));
+		  int pos = hashParams.size() + getIndex(hashLocals,func + " " + lastGlobal);
 		  
 		  gen.saveToScalar(pos);
 
-			
-					}
+		}
         /*jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image)*/              }      #IntValue)
     | (
       ScalarAccess() #ScalarAccess
@@ -541,7 +546,8 @@ void Argument() #void :{  Token t1, t2, t3;}{
             System.out.println("ERROR: " + errorMessage);
             System.exit(1);          }          if (ob1.getSize().equals("null"))          {            error = true;            errorMessage = "ScalarAccess: Invalid var.size: " + (String) t1.image + "." + ob1.getValue();            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }
           if (arraySize == true)          {            ob2.setType("array");			ob2.setSize(ob1.getSize());
-		  }else ob2.setValue(ob1.getSize());
+		  }else		  {		    ob2.setValue(ob1.getSize());
+		  }
 		  
           globalVars.put(lastGlobal, ob2);        }        else if (localType == 0)        {          if (!localVars.containsKey((String) t1.image))           if (!funcParams.containsKey((String) t1.image))           if (!globalVars.containsKey((String) t1.image))          {            error = true;            errorMessage = "Params: ScalarAccess: Invalid var.size: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }        }
       }      #size)  )?
@@ -556,7 +562,6 @@ void Argument() #void :{  Token t1, t2, t3;}{
 	  {
 	if (globalVar == true)
         {
-          System.out.println("FFFFFFFFFFFFFFFF "+(String)t1.image);
           if (!globalVars.containsKey((String) t1.image))
           {
             error = true;
@@ -586,7 +591,17 @@ void Argument() #void :{  Token t1, t2, t3;}{
           if (arraySize == true)          {            ob2.setSize(ob1.getValue());
           	ob2.setType("array");
          }
-		else ob2.setValue(ob1.getValue());
+		else		{		  ob2.setValue(ob1.getValue());
+		  
+		 	//String func=funcNames.get(funcNames.size()-1);
+		  	lastGlobal = order.get(order.size() - 1);
+		  	/*LinkedHashMap < String, Object > hashParams=filterFunc(funcParams,func);
+		  	LinkedHashMap < String, Object > hashLocals=filterFunc(localVars,func);
+
+		  	int pos = hashParams.size() + (hashLocals.size() - (getIndex(hashLocals,lastGlobal)+1));*/
+		    gen.loadScalar(moduleName, (String)t1.image);
+		    gen.saveToScalar(moduleName, lastGlobal);
+		}
 		
           globalVars.put(lastGlobal, ob2);
         
@@ -635,7 +650,56 @@ void Argument() #void :{  Token t1, t2, t3;}{
 
           globalVars.put(lastLocal, ob2);
           
+        }else	        {				String lastLocal = order.get(order.size() - 1);
+				System.out.println("GGGGGG: "+lastLocal);
+				String func=funcNames.get(funcNames.size()-1);
+				
+	            Object ob1 = localVars.get(func+" "+(String) t1.image);
+	            Object ob2 = localVars.get(func+" "+lastLocal);
+	
+	          	if (!ob1.getType().equals("scalar"))
+	          {
+	            error = true;
+	            errorMessage = "ScalarAccess: Invalid var type. Must be scalar type. Current is: "+ ob1.getType();
+	            System.out.println("ERROR: " + errorMessage);
+	            System.exit(1);
+	          }
+	          if (ob1.getValue().equals("null"))
+	          {
+	            error = true;
+	            errorMessage = "ScalarAccess: Uninitialized var: " + ob1.getName() +"; value: "+ ob1.getValue();
+	            System.out.println("ERROR: " + errorMessage);
+	            System.exit(1);
+	          }
+	
+	          if (arraySize == true)
+	          {
+	            ob2.setSize(ob1.getValue());
+	          	ob2.setType("array");
+	         }
+			else
+			{
+			  ob2.setValue(ob1.getValue());
+			  
+			 	func=funcNames.get(funcNames.size()-1);
+			  	String lastGlobal = order.get(order.size() - 1);
+			  	LinkedHashMap < String, Object > hashParams=filterFunc(funcParams,func);
+			  	LinkedHashMap < String, Object > hashLocals=filterFunc(localVars,func);
+
+				int posToStore = hashParams.size() + getIndex(hashLocals,func + " " + lastGlobal);
+			  	int posToLoad = hashParams.size() + getIndex(hashLocals,func+" "+(String)t1.image);
+			    gen.loadScalar(posToLoad);
+			    gen.saveToScalar(posToStore);
+			}
+			
+	          globalVars.put(lastLocal, ob2);
+	        
+	          
+	
+
         }
+        
+        
       }/*else      {
         String lastFunc=funcNames.get(funcNames.size()-1);
         			String lastLocal = order.get(order.size() - 1);
