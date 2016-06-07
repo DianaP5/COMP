@@ -19,7 +19,7 @@ public class JVCgenerator {
 	
 	private String modName;
 	private String funcName;
-	private String[] callArgs;
+	private String callArgs;
 	private String funcReturn;
 	
 	JVCgenerator(String fileName) throws FileNotFoundException, UnsupportedEncodingException{
@@ -123,7 +123,7 @@ public class JVCgenerator {
 	}
 	
 	void saveArray(int arrayPos) {
-		writer.println("iload_" + array);
+		writer.println("iload_" + arrayPos);
 	}
 	
 	void loadArray() {
@@ -146,26 +146,26 @@ public class JVCgenerator {
 	
 	//call function
 	void setCallName(String[] funcs, String args, String ret) {
-		if(funcs[1] == NULL){
+		if(funcs[1] == null){
 			funcName = funcs[0];
 		} else {
 			modName = funcs[0];
-			funcName = func[1];
+			funcName = funcs[1];
 		}
 		callArgs = args;
 		funcReturn = ret;
 	}
 	void setCallVariables(int arg) {
-		write.println("bipush " + arg);
+		writer.println("bipush " + arg);
 	}
 	void setCallVariables(int[] arg) {
-		write.println("aload " + arg);
+		writer.println("aload " + arg);
 	}
 	void callfunc(String moduleName, String funcName, int numArgs, String typeArgs, String returnFunc){
 		if(moduleName == null) {
-			writer.println(funcName + "(" + callArgs ")" + funcReturn);
+			writer.println(funcName + "(" + callArgs+ ")" + funcReturn);
 		} else {
-            writer.println(moduleName + "/" + funcName + "(" callArgs + ")" + funcReturn);
+            writer.println(moduleName + "/" + funcName + "(" +callArgs + ")" + funcReturn);
 		}
     }
 }

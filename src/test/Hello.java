@@ -1,3 +1,5 @@
+package test;
+
 public class Hello {
   private static int a = 10;
   public static void main(String args[]) {
