@@ -17,6 +17,11 @@ public class JVCgenerator {
 	private SimpleNode node;
 	private String moduleName;
 	
+	private String modName;
+	private String funcName;
+	private String[] callArgs;
+	private String funcReturn;
+	
 	JVCgenerator(String fileName) throws FileNotFoundException, UnsupportedEncodingException{
 		this.fileName=fileName;
 		
@@ -93,11 +98,11 @@ public class JVCgenerator {
 			oper+="\tif_icmpge loop_end" +  numLoops + "\n";
 		else if(Oper.operation.toString().equals("!="))
 			oper+="\tif_icmpeq loop_end" +  numLoops + "\n";		
-		fich.write(oper.getBytes());
+		writer.println(oper.getBytes());
 		
 		
 		
-		fich.write(("\tgoto loop"+ numLoops +"\nloop_end" + numLoops +":\n").getBytes());
+		writer.println(("\tgoto loop"+ numLoops +"\nloop_end" + numLoops +":\n").getBytes());
 		
 		
 		
@@ -111,4 +116,56 @@ public class JVCgenerator {
 		writer.close();
 	}
 	
+	//arrayAccess
+	//recebe inteiro caso Index = <INTEGER> ou <ID>(faz a análise no jjt)
+	void saveIndex(int index) {
+		writer.println("bipush " + index);
+	}
+	
+	void saveArray(int arrayPos) {
+		writer.println("iload_" + array);
+	}
+	
+	void loadArray() {
+		writer.println("iaload");
+	}
+	
+	//scalarAccess
+	void loadScalar(int scalar) {
+		writer.println("iload_" + scalar);
+	}
+	
+	void saveToScalar(int scalar) {
+		writer.println("istore_" + scalar);
+	}
+	
+	//load integer to stack
+	void loadInt(int integer) {
+		writer.println("bipush " + integer);
+	}
+	
+	//call function
+	void setCallName(String[] funcs, String args, String ret) {
+		if(funcs[1] == NULL){
+			funcName = funcs[0];
+		} else {
+			modName = funcs[0];
+			funcName = func[1];
+		}
+		callArgs = args;
+		funcReturn = ret;
+	}
+	void setCallVariables(int arg) {
+		write.println("bipush " + arg);
+	}
+	void setCallVariables(int[] arg) {
+		write.println("aload " + arg);
+	}
+	void callfunc(String moduleName, String funcName, int numArgs, String typeArgs, String returnFunc){
+		if(moduleName == null) {
+			writer.println(funcName + "(" + callArgs ")" + funcReturn);
+		} else {
+            writer.println(moduleName + "/" + funcName + "(" callArgs + ")" + funcReturn);
+		}
+    }
 }
