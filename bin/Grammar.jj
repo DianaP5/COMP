@@ -14,7 +14,7 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
   private static ArrayList < String > tempFuncParamsType = new ArrayList < String > ();  private static ArrayList <String > tempExprType=new ArrayList <String > ();
     private static String globalSignal, filename,errorMessage = "",indexArray="null";  private static Boolean globalVar = false, funcParam = false, localVar = false, error = false,expr=false,stm=false,arraySize=false,size=false,arrayAccess=false;
   private static int localType = - 1, nArgs=0,aSize=-1;
-  private static File teste;  public static void main(String args []) throws FileNotFoundException  {    File f1 = new File("examples/teste.txt");    if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();      root.dump("");      /* TESTING
+  private static File teste;  public static void main(String args []) throws FileNotFoundException  {    File f1 = new File("examples/teste1.txt");    if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();      root.dump("");      /* TESTING
       for (int i=0; i < order.size(); i++)
       	System.out.println("ORDER: "+order.get(i));
 

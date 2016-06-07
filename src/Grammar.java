@@ -32,7 +32,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
 
   public static void main(String args []) throws FileNotFoundException
   {
-    File f1 = new File("examples/teste.txt");
+    File f1 = new File("examples/teste1.txt");
     if (f1.exists())
     {
       FileInputStream s1 = new FileInputStream(f1);
