@@ -1,5 +1,6 @@
 .class public fields
 .super java/lang/Object
+
 bipush 3
 putstatic fields/h I
 bipush 43

@@ -20,7 +20,7 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
   private static JVCgenerator gen;
     public static void main(String args []) throws FileNotFoundException,UnsupportedEncodingException  {    File f1 = new File("examples/teste1.txt");
 	gen=new JVCgenerator("generated");
-        if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();      root.dump("");      /* TESTING
+        if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();     // root.dump("");      /* TESTING
       for (int i=0; i < order.size(); i++)
       	System.out.println("ORDER: "+order.get(i));
 
@@ -68,7 +68,9 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
 
       System.out.println("Accepted. " + myYal.eval(root));
       
-    gen.closeWriter();      /*JVCgenerator g1 = new JVCgenerator("teste");      g1.addModule("nomeModulo");      g1.addVar("variavel", "2");      g1.closeWriter();*/    }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: " + e.getMessage());    }  }  int eval(SimpleNode node)  {    if (node.jjtGetNumChildren() == 0)  // leaf node with integer value
+    gen.closeWriter();
+    Process p = Runtime.getRuntime().exec("java -jar ../jasmin.jar ../generated.j");
+    p.waitFor();      /*JVCgenerator g1 = new JVCgenerator("teste");      g1.addModule("nomeModulo");      g1.addVar("variavel", "2");      g1.closeWriter();*/    }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: " + e.getMessage());    }  }  int eval(SimpleNode node)  {    if (node.jjtGetNumChildren() == 0)  // leaf node with integer value
     return node.val;    else if (node.jjtGetNumChildren() == 1)  // only one child
     return this.eval((SimpleNode) node.jjtGetChild(0));    SimpleNode lhs = (SimpleNode) node.jjtGetChild(0); //left child
     SimpleNode rhs = (SimpleNode) node.jjtGetChild(1); // right child
