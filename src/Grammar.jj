@@ -43,12 +43,14 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
 
       System.out.println("ISTO: " + globalVars.get("a").getSize());
       System.out.println("ISTO: " + globalVars.get("a").getValue());
-      System.out.println("ISTO: " + localVars.get("p c").getValue());
-      System.out.println("ISTO: " + globalVars.get("a").getArray().get(6));
+      System.out.println("ISTO: " + localVars.get("p l").getValue());
+      System.out.println("ISTO: " + globalVars.get("u").getValue());
+      System.out.println("ISTO: " + globalVars.get("y").getValue());
       
       System.out.println("ISTO: " + localVars.get("p"+" "+"k").getSize());
   
-      System.out.println("ISTO: " + globalVars.get("g").getArray().get(3));*/
+      System.out.println("ISTO: " + globalVars.get("g").getArray().get(3));
+      */
       
       System.out.println("Accepted. " + myYal.eval(root));      /*JVCgenerator g1 = new JVCgenerator("teste");      g1.addModule("nomeModulo");      g1.addVar("variavel", "2");      g1.closeWriter();*/    }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: " + e.getMessage());    }  }  int eval(SimpleNode node)  {    if (node.jjtGetNumChildren() == 0)  // leaf node with integer value
     return node.val;    else if (node.jjtGetNumChildren() == 1)  // only one child
@@ -312,7 +314,6 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
         jjtc006 = false;
       }
 /*@egen*/      {
-        System.out.println(globalVar+" "+localVar);
         
         if (globalVar == true)        {          String lastGlobal = order.get(order.size() - 1);          Object ob1 = globalVars.get(lastGlobal);          if (!ob1.getSize().equals("null") && ob1.getType().equals("array"))          {
             if (!indexArray.equals("null"))
@@ -334,8 +335,6 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
             
             if (!indexArray.equals("null"))
             {
-            System.out.println("ggggggggggg "+lastGlobal+" "+indexArray+" "+indexArray+" "+(String) t2.image);
-            
             	ob1.setIndexValue(indexArray,(String) t2.image);
             	
             }else
@@ -2086,6 +2085,7 @@ void Argument()       :{  Token t1, t2, t3;}{
 	  {
 	if (globalVar == true)
         {
+          System.out.println("FFFFFFFFFFFFFFFF "+(String)t1.image);
           if (!globalVars.containsKey((String) t1.image))
           {
             error = true;
@@ -2111,12 +2111,14 @@ void Argument()       :{  Token t1, t2, t3;}{
             System.out.println("ERROR: " + errorMessage);
             System.exit(1);
           }
-          ob2.setSize(ob1.getValue());
 
-          if (arraySize == true)
+          if (arraySize == true)          {            ob2.setSize(ob1.getValue());
           	ob2.setType("array");
-
+         }
+		else ob2.setValue(ob1.getValue());
+		
           globalVars.put(lastGlobal, ob2);
+        
           
         }else if (localVar == true && expr == false)
         {

@@ -81,7 +81,6 @@ public class Object {
 	
 	public void setIndexValue(String index,String value){
 		int i=Integer.parseInt(index);
-		System.out.println(this.size+" "+this.size+" "+this.value);
 		
 		this.array.set(i,value);
 	}

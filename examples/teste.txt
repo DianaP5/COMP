@@ -1,6 +1,9 @@
 module fields {
 
 ab;
+y=1;
+u=2;
+u=y;
 g[]=[20];
 h[]=3;
 b=43;
@@ -13,8 +16,12 @@ a[6]=9;
 
 function y[]=p(f[],p){
 k=[abs];
-c=2;
+l=9;
 g[3]=4;
+
+if(ab > b){
+ a=3;
+}
 }
 
 function z(ab,b){
