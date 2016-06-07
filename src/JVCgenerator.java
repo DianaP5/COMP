@@ -180,4 +180,38 @@ public class JVCgenerator {
             writer.println(moduleName + "/" + funcName + "(" +callArgs + ")" + funcReturn);
 		}
     }
+	
+void rhs(String operation){
+		
+		if (operation == "+")
+			writer.println("iadd");
+		
+		else if (operation == "-")
+			writer.println("isub\n");
+		
+		else if (operation == "*")
+			writer.println("imul\n");
+		
+		else if (operation == "/")
+			writer.println("idiv\n");
+		
+		else if (operation == "&")
+			writer.println("iand\n");
+		
+		else if (operation == "|")
+			writer.println("ior\n");
+		
+		else if (operation == "^")
+			writer.println("ixor\n");
+		
+		else if (operation == "<<")
+			writer.println("ishl\n");
+		
+		else if (operation == ">>")
+			writer.println("ishr\n");
+
+		else if (operation == ">>>")
+			writer.println("iushr\n");
+	
+	}
 }
