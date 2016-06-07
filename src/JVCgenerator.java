@@ -138,6 +138,9 @@ public class JVCgenerator {
 	void saveToScalar(int scalar) {
 		writer.println("istore_" + scalar);
 	}
+	void saveToScalar(String module, String varName) {
+		writer.println("putstatic " + module + "/" + varName + " |");
+	}
 	
 	//load integer to stack
 	void loadInt(int integer) {
