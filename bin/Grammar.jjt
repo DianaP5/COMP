@@ -14,9 +14,9 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
   private static int localType = - 1, nArgs=0,aSize=-1;
   private static File teste;
   private static JVCgenerator gen;
-    public static void main(String args []) throws FileNotFoundException,UnsupportedEncodingException  {    File f1 = new File("examples/teste1.txt");
+    public static void main(String args []) throws FileNotFoundException,UnsupportedEncodingException  {    File f1 = new File("examples/teste5.txt");
 	gen=new JVCgenerator("generated");
-        if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();     // root.dump("");      /* TESTING
+        if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();      root.dump("");      /* TESTING
       for (int i=0; i < order.size(); i++)
       	System.out.println("ORDER: "+order.get(i));
 
@@ -48,12 +48,11 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
       System.out.println("ISTO: " + localVars.get("p l").getValue());
       System.out.println("ISTO: " + globalVars.get("u").getValue());
       System.out.println("ISTO: " + globalVars.get("y").getValue());
-      */
       System.out.println("ISTO: " + localVars.get("p u").getValue());
 	    System.out.println("ISTO: " + localVars.get("p y").getValue());
     
       System.out.println("ISTO: " + globalVars.get("g").getArray().get(3));
-      
+      */
 
 	LinkedHashMap < String, Object > hash=filterFunc(funcParams,"p");
 

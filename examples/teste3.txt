@@ -8,11 +8,7 @@ g[]=[20];
 h[]=3;
 b=43;
 a=[b];
-c=[a.size];
-a=8;
-ab=a.size;
-abs=6;
-a[6]=9;
+a[45]=9;
 
 function y[]=p(f[],p){
 k=[abs];

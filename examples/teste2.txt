@@ -2,7 +2,7 @@ module fields {
 
 ab;
 y=1;
-u=2;
+u=g;
 u=y;
 g[]=[20];
 h[]=3;

@@ -35,7 +35,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
 
   public static void main(String args []) throws FileNotFoundException,UnsupportedEncodingException
   {
-    File f1 = new File("examples/teste1.txt");
+    File f1 = new File("examples/teste5.txt");
         gen=new JVCgenerator("generated");
 
     if (f1.exists())
@@ -49,7 +49,8 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
       BufferedReader stream = new BufferedReader(new FileReader(f1));
       Grammar myYal = new Grammar(stream);
       SimpleNode root = myYal.Module();
-     // root.dump("");      /* TESTING
+      root.dump("");
+      /* TESTING
       for (int i=0; i < order.size(); i++)
       	System.out.println("ORDER: "+order.get(i));
 
@@ -81,12 +82,11 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
       System.out.println("ISTO: " + localVars.get("p l").getValue());
       System.out.println("ISTO: " + globalVars.get("u").getValue());
       System.out.println("ISTO: " + globalVars.get("y").getValue());
-      */
       System.out.println("ISTO: " + localVars.get("p u").getValue());
-            System.out.println("ISTO: " + localVars.get("p y").getValue());
-
+	    System.out.println("ISTO: " + localVars.get("p y").getValue());
+    
       System.out.println("ISTO: " + globalVars.get("g").getArray().get(3));
-
+      */
 
         LinkedHashMap < String, Object > hash=filterFunc(funcParams,"p");
 
@@ -3211,6 +3211,11 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     finally { jj_save(50, xla); }
   }
 
+  static private boolean jj_3R_24() {
+    if (jj_scan_token(LPAR)) return true;
+    return false;
+  }
+
   static private boolean jj_3_48() {
     if (jj_scan_token(INTEGER)) return true;
     return false;
@@ -3709,11 +3714,6 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     if (jj_scan_token(ID)) return true;
     if (jj_scan_token(31)) return true;
     if (jj_3R_23()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_24() {
-    if (jj_scan_token(LPAR)) return true;
     return false;
   }
 
