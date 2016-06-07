@@ -1,10 +1,11 @@
+package test;
+
 import java.util.HashMap;
 import java.lang.*;
 import java.util.*;
 
-package test;
 
-public class Grammar {
+public class Hello {
   private static int a = 10;
   public static void main(String args[]) {
     int[] array;

@@ -1,16 +1,22 @@
 /**
  * JJTree template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
- */options{  static = true;  LOOKAHEAD= 2;}PARSER_BEGIN(Grammar)import java.util.HashMap;import java.lang.*;import java.util.*;import java.io.File;import java.io.FileInputStream;import java.io.BufferedReader;import java.io.FileReader;import java.io.FileNotFoundException;
+ */options{  static = true;  LOOKAHEAD= 2;}PARSER_BEGIN(Grammar)import java.util.LinkedHashMap;import java.lang.*;import java.util.*;import java.io.File;import java.io.FileInputStream;import java.io.BufferedReader;import java.io.FileReader;import java.io.FileNotFoundException;
 
-import java.util.Map.Entry;public class Grammar{  /*local vars-> params function-> global vars*/  private static HashMap < String, Object > localVars = new HashMap < String, Object > ();  private static HashMap < String, Object > funcParams = new HashMap < String, Object > ();  private static HashMap < String, Object > globalVars = new HashMap < String, Object > ();
-  private static HashMap < String, Object > funcReturn = new HashMap < String, Object > ();
-  //function name : return var name  private static HashMap < String, String > functions = new HashMap < String, String > ();
+import java.io.UnsupportedEncodingException;
+
+import java.util.Map.Entry;public class Grammar{  /*local vars-> params function-> global vars*/  private static LinkedHashMap < String, Object > localVars = new LinkedHashMap < String, Object > ();  private static LinkedHashMap < String, Object > funcParams = new LinkedHashMap < String, Object > ();  private static LinkedHashMap < String, Object > globalVars = new LinkedHashMap < String, Object > ();
+  private static LinkedHashMap < String, Object > funcReturn = new LinkedHashMap < String, Object > ();
+  //function name : return var name  private static LinkedHashMap < String, String > functions = new LinkedHashMap < String, String > ();
     private static ArrayList < String > order = new ArrayList < String > ();
   private static ArrayList < String > funcNames = new ArrayList < String > ();
   private static ArrayList < String > tempFuncParamsType = new ArrayList < String > ();  private static ArrayList <String > tempExprType=new ArrayList <String > ();
-    private static String globalSignal, filename,errorMessage = "",indexArray="null";  private static Boolean globalVar = false, funcParam = false, localVar = false, error = false,expr=false,stm=false,arraySize=false,size=false,arrayAccess=false;
+    private static String globalSignal, filename,errorMessage = "",indexArray="null", moduleName="";  private static Boolean globalVar = false, funcParam = false, localVar = false, error = false,expr=false,stm=false,arraySize=false,size=false,arrayAccess=false;
   private static int localType = - 1, nArgs=0,aSize=-1;
-  private static File teste;  public static void main(String args []) throws FileNotFoundException  {    File f1 = new File("examples/teste1.txt");    if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();      root.dump("");      /* TESTING
+  private static File teste;
+  private static JVCgenerator gen;
+    public static void main(String args []) throws FileNotFoundException,UnsupportedEncodingException  {    File f1 = new File("examples/teste1.txt");
+	gen=new JVCgenerator("generated");
+        if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();      root.dump("");      /* TESTING
       for (int i=0; i < order.size(); i++)
       	System.out.println("ORDER: "+order.get(i));
 
@@ -47,14 +53,56 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
   
       System.out.println("ISTO: " + globalVars.get("g").getArray().get(3));
       */
+
+	LinkedHashMap < String, Object > hash=filterFunc(funcParams,"p");
+
+	for (Entry<String, Object> e : hash.entrySet()) {	
+		System.out.println("ISTO: "+e.getKey());
+  	}
+ 
+
+      System.out.println("Accepted. " + myYal.eval(root));
       
-      System.out.println("Accepted. " + myYal.eval(root));      /*JVCgenerator g1 = new JVCgenerator("teste");      g1.addModule("nomeModulo");      g1.addVar("variavel", "2");      g1.closeWriter();*/    }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: " + e.getMessage());    }  }  int eval(SimpleNode node)  {    if (node.jjtGetNumChildren() == 0)  // leaf node with integer value
+    gen.closeWriter();      /*JVCgenerator g1 = new JVCgenerator("teste");      g1.addModule("nomeModulo");      g1.addVar("variavel", "2");      g1.closeWriter();*/    }    catch (Exception e)    {      System.out.println("Error!");      System.out.println("MESSAGE: " + e.getMessage());    }  }  int eval(SimpleNode node)  {    if (node.jjtGetNumChildren() == 0)  // leaf node with integer value
     return node.val;    else if (node.jjtGetNumChildren() == 1)  // only one child
     return this.eval((SimpleNode) node.jjtGetChild(0));    SimpleNode lhs = (SimpleNode) node.jjtGetChild(0); //left child
     SimpleNode rhs = (SimpleNode) node.jjtGetChild(1); // right child
     switch (node.id)    {      case GrammarTreeConstants.JJTMODULE :       //PORQUE? TODO
       System.out.println(".class public ");      break;      default : // abort
-      System.out.println("Operador ilegal!");      System.exit(1);    }    return 0;  }}PARSER_END(Grammar)SKIP :{  " "| "\t"| "\n"| "\r"| < "//" (~[ "\n", "\r" ])*    (      "\n"    | "\r"    | "\r\n"    ) >| < "/*" (~[ "*" ])* "*"    (      "*"    | ~[ "*", "/" ] (~[ "*" ])* "*"    )*    "/" >}TOKEN : /* LITERALS */{  < RELA_OP :    ">"  | "<"  | "<="  | ">="  | "=="  | "!=" >| < ADDSUB_OP :    "+"  | "-" >| < ARITH_OP :    "*"  | "/"  | "<<"  | ">>"  | ">>>" >| < BITWISE_OP :    "&"  | "|"  | "^" >| < NOT_OP : "!" >| < WHILE : "while" >| < IF : "if" >| < ELSE : "else" >| < ASSIGN : "=" >| < ASPA : "\"" >| < LPAR : "(" >| < RPAR : ")" >| < VIRG : "," >| < PVIRG : ";" >| < LCHAVETA : "{" >| < RCHAVETA : "}" >| < FUNCTION : "function" >| < MODULE : "module" >| < SIZE : "size" >}TOKEN : /* IDENTIFIERS */{  < INTEGER : (< DIGIT >)+ >| < ID :    < LETTER >    (      < LETTER >    | < DIGIT >    )* >| < #LETTER : [ "$", "A"-"Z", "_", "a"-"z" ] >| < #DIGIT : [ "0"-"9" ] >| < STRING : "\"" ([ "a"-"z", "A"-"Z", "0"-"9", ":", " ", "=" ])+ "\"" >}SimpleNode Module() :{  Token t1;}{  < MODULE > t1 = < ID >  {    //jjtThis.module = (String) t1.image;    System.out.println("MODULE: " + t1.image);    globalVar = true;  }  #ID   < LCHAVETA > (Declaration() #Declaration)*(  Function() #Function)*< RCHAVETA >{  return jjtThis;}}
+      System.out.println("Operador ilegal!");      System.exit(1);    }    return 0;  }
+
+   static LinkedHashMap < String, Object > filterFunc(LinkedHashMap < String, Object > hash,String func)
+  {
+
+          LinkedHashMap < String, Object > newHash=new LinkedHashMap < String, Object >();
+
+          for (Entry<String, Object> e : hash.entrySet()) {
+                if (e.getKey().startsWith(func)) {
+                  Object ob1=hash.get(e.getKey());
+
+                        newHash.put(ob1.getName(),ob1);
+                }
+        }
+        return newHash;
+  }
+
+  static int getIndex(LinkedHashMap<String,Object > hash, String key)  {
+    int counter=0;
+    
+     for (Entry<String, Object> e : hash.entrySet())     {       
+         if (e.getKey().equals(key))
+            break;
+                  
+     counter ++;
+   }
+
+   return counter;
+
+	
+  }
+  }PARSER_END(Grammar)SKIP :{  " "| "\t"| "\n"| "\r"| < "//" (~[ "\n", "\r" ])*    (      "\n"    | "\r"    | "\r\n"    ) >| < "/*" (~[ "*" ])* "*"    (      "*"    | ~[ "*", "/" ] (~[ "*" ])* "*"    )*    "/" >}TOKEN : /* LITERALS */{  < RELA_OP :    ">"  | "<"  | "<="  | ">="  | "=="  | "!=" >| < ADDSUB_OP :    "+"  | "-" >| < ARITH_OP :    "*"  | "/"  | "<<"  | ">>"  | ">>>" >| < BITWISE_OP :    "&"  | "|"  | "^" >| < NOT_OP : "!" >| < WHILE : "while" >| < IF : "if" >| < ELSE : "else" >| < ASSIGN : "=" >| < ASPA : "\"" >| < LPAR : "(" >| < RPAR : ")" >| < VIRG : "," >| < PVIRG : ";" >| < LCHAVETA : "{" >| < RCHAVETA : "}" >| < FUNCTION : "function" >| < MODULE : "module" >| < SIZE : "size" >}TOKEN : /* IDENTIFIERS */{  < INTEGER : (< DIGIT >)+ >| < ID :    < LETTER >    (      < LETTER >    | < DIGIT >    )* >| < #LETTER : [ "$", "A"-"Z", "_", "a"-"z" ] >| < #DIGIT : [ "0"-"9" ] >| < STRING : "\"" ([ "a"-"z", "A"-"Z", "0"-"9", ":", " ", "=" ])+ "\"" >}SimpleNode Module() :{  Token t1;}{  < MODULE > t1 = < ID >  {
+    moduleName=(String) t1.image;
+    gen.addModule(moduleName);    //jjtThis.module = (String) t1.image;    System.out.println("MODULE: " + t1.image);    globalVar = true;  }  #ID   < LCHAVETA > (Declaration() #Declaration)*(  Function() #Function)*< RCHAVETA >{  return jjtThis;}}
 void Declaration() #void :{  Token t1, t2;}{
 
   {
@@ -156,7 +204,26 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
           }
         }
         }        System.out.println("Value: " + Integer.parseInt((String) t2.image));
-        indexArray="null";        /*jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image)*/        ;      }      #IntValue)
+        
+        indexArray="null";
+
+        gen.loadInt(Integer.parseInt((String)t2.image));
+		
+		String lastGlobal = order.get(order.size() - 1);
+		
+        if (globalVar == true)        	gen.saveToScalar(moduleName,lastGlobal);		else		{
+		  String func=funcNames.get(funcNames.size()-1);
+		  
+		  LinkedHashMap < String, Object > hashParams=filterFunc(funcParams,func);
+		  LinkedHashMap < String, Object > hashLocals=filterFunc(localVars,func);
+
+		  int pos = hashParams.size() + (hashLocals.size() - (getIndex(hashLocals,lastGlobal)+1));
+		  
+		  gen.saveToScalar(pos);
+
+			
+					}
+        /*jjtThis.valorInicial = Integer.parseInt(globalSignal + (String) t2.image)*/              }      #IntValue)
     | (
       ScalarAccess() #ScalarAccess
     )  ))?
@@ -221,6 +288,7 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
           localVars.put(func+" "+(String) t1.image, ob1);
           order.add((String) t1.image);
            System.out.println("Scalar: func local id: " + (String) t1.image);
+           
         }
         else
         {
@@ -329,7 +397,7 @@ Declaration() #DECLARATION)| LOOKAHEAD(3)(  Assign() #ASSIGN)| Call() #CALL
   for (Entry<String, Object> e : funcParams.entrySet()) {	
 		if (e.getKey().startsWith(lastFunc)) {
 		  	Object ob1=funcParams.get(e.getKey());
-			tempFuncParamsType.add(ob1.getType());
+			tempFuncParamsType.add(0,ob1.getType());
    			//System.out.println("CHECK : "+ob1.getType());
   		}
 	}
@@ -382,6 +450,9 @@ void Argument() #void :{  Token t1, t2, t3;}{
               String type1=globalVars.get((String) t1.image).getType();
               String type2=tempFuncParamsType.get(nArgs);
               error = true;
+
+              System.out.println(tempFuncParamsType);
+              
               errorMessage = "Call: Invalid param("+nArgs+") id type: " +type1+" should be: "+type2;
               System.out.println("ERROR: " + errorMessage);
               System.exit(1);
