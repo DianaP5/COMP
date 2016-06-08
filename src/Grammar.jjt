@@ -618,7 +618,7 @@ void Argument() #void :{  Token t1, t2, t3;}{
 		  	int pos = hashParams.size() + (hashLocals.size() - (getIndex(hashLocals,lastGlobal)+1));*/
 
 			if(newVar) {
-				gen.saveToScalar(moduleName, lastGlobal, Integer.parseInt(globalVars.get((String)t1.image).value()));
+				gen.saveToScalar(moduleName, lastGlobal, Integer.parseInt(globalVars.get((String)t1.image).getValue()));
 				newVar = false;
 			} else {
 				gen.loadScalar(moduleName, (String)t1.image);
