@@ -150,9 +150,6 @@ public class JVCgenerator {
 	void saveToScalar(String module, String varName) {
 		writer.println("putstatic " + module + "/" + varName + " I");
 	}
-	void saveToScalar(String module, String varName, int value) {
-		writer.println("." + module + " static " + varName + " I = " + value);
-	}
 	
 	//load integer to stack
 	void loadInt(int integer) {

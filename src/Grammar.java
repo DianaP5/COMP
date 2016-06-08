@@ -35,7 +35,12 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
 
   public static void main(String args []) throws FileNotFoundException,UnsupportedEncodingException
   {
-    File f1 = new File("examples/teste5.txt");
+        if(args.length != 1) {
+                System.out.println("Usage: java Grammar <fileName>.yal");
+                System.exit(1);
+        }
+
+    File f1 = new File(args[0]);
         gen=new JVCgenerator("generated");
 
     if (f1.exists())
@@ -89,11 +94,11 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
       */
 
         LinkedHashMap < String, Object > hash=filterFunc(funcParams,"p");
-
-        for (Entry<String, Object> e : hash.entrySet()) {
-                System.out.println("ISTO: "+e.getKey());
-        }
-
+/*
+	for (Entry<String, Object> e : hash.entrySet()) {	
+		System.out.println("ISTO: "+e.getKey());
+  	}
+ */
 
       System.out.println("Accepted. " + myYal.eval(root));
 
@@ -120,8 +125,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     {
       case GrammarTreeConstants.JJTMODULE :
       //PORQUE? TODO
-      System.out.println(".class public ");
-      break;
+      //System.out.println(".class public ");      break;
       default : // abort
       System.out.println("Operador ilegal!");
       System.exit(1);
@@ -152,10 +156,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
      {
 
          if (e.getKey().equals(key))
-         {
-                        System.out.println("index: " + counter + "value: " + e.getKey());
                         break;
-       }
 
      counter ++;
    }
@@ -182,7 +183,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     moduleName=(String) t1.image;
     gen.addModule(moduleName);
     //jjtThis.module = (String) t1.image;
-    System.out.println("MODULE: " + t1.image);
+    //System.out.println("MODULE: " + t1.image);
     globalVar = true;
       } finally {
     if (jjtc001) {
@@ -551,7 +552,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
           }
         }
         }
-        System.out.println("Value: " + Integer.parseInt((String) t2.image));
+        //System.out.println("Value: " + Integer.parseInt((String) t2.image));
 
         indexArray="null";
 
@@ -665,7 +666,8 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
           System.out.println("ERROR: " + errorMessage);
           System.exit(1);
         }
-        System.out.println("func assign id: " + (String) t1.image);
+        //System.out.println("func assign id: " + (String) t1.image);
+
         jj_consume_token(LPAR);
         if (jj_2_11(2)) {
           SimpleNode jjtn002 = new SimpleNode(JJTVARLIST);
@@ -713,7 +715,8 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
           System.out.println("ERROR: " + errorMessage);
           System.exit(1);
         }
-        System.out.println("func id: " + (String) t1.image);
+        //System.out.println("func id: " + (String) t1.image);
+
         jj_consume_token(LPAR);
         if (jj_2_12(2)) {
           SimpleNode jjtn003 = new SimpleNode(JJTVARLIST);
@@ -805,7 +808,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     try {
       jjtree.closeNodeScope(jjtn001, true);
       jjtc001 = false;
-      System.out.println("Func return id: " + (String) t1.image);
+      //System.out.println("Func return id: " + (String) t1.image);
       //jjtThis.nameF = (String) t1.image; name_f1 = (String) t1.image;
       if (!funcReturn.containsKey((String) t1.image))
       {
@@ -832,7 +835,8 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
       Object ob1 = funcReturn.get(lastReturn);
       ob1.setType("array");
       funcReturn.put(lastReturn, ob1);
-      System.out.println("Func return type: ARRAY");
+     // System.out.println("Func return type: ARRAY");
+
     } else {
       ;
     }
@@ -993,7 +997,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
         {
           Object ob1 = new Object((String) t1.image, "array", "null");
           funcParams.put(lastFunc + " " + (String) t1.image, ob1);
-          System.out.println("Array: Func param id: " + (String) t1.image);
+          //System.out.println("Array: Func param id: " + (String) t1.image);
           //order.add((String) t1.image);
         }
         else
@@ -1028,7 +1032,8 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
           System.exit(1);
         }
       }
-      System.out.println("array id: " + (String) t1.image);
+      //System.out.println("array id: " + (String) t1.image);
+
     } finally {
       if (jjtc001) {
         jjtree.closeNodeScope(jjtn001, true);
@@ -1078,7 +1083,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
         {
           Object ob1 = new Object((String) t1.image, "scalar", "null");
           funcParams.put(lastFunc + " " + (String) t1.image, ob1);
-          System.out.println("Scalar: Func param id: " + (String) t1.image);
+          //System.out.println("Scalar: Func param id: " + (String) t1.image);
           //order.add((String) t1.image);
         }
         else
@@ -1109,7 +1114,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
           String func=funcNames.get(funcNames.size()-1);
           localVars.put(func+" "+(String) t1.image, ob1);
           order.add((String) t1.image);
-           System.out.println("Scalar: func local id: " + (String) t1.image);
+           //System.out.println("Scalar: func local id: " + (String) t1.image);
 
         }
         else
@@ -1127,7 +1132,8 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
         }
       }
 
-      System.out.println("Scalar id: " + (String) t1.image);
+      //System.out.println("Scalar id: " + (String) t1.image);
+
     } finally {
       if (jjtc001) {
         jjtree.closeNodeScope(jjtn001, true);
@@ -1636,7 +1642,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
         globalVars.put(lastLocal, ob1);
       }
 
-      System.out.println("array size: " + (String) t1.image);
+      //System.out.println("array size: " + (String) t1.image);
       /*jjtThis.arraysize = Integer.parseInt((String)t1.image);*/
 
         } finally {
@@ -2064,8 +2070,8 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     }
     jj_consume_token(RPAR);
     //TODO
-        for (int i=0; i < tempExprType.size(); i++)
-                System.out.println("CHECK THIS OUT: "+tempExprType.get(i));
+        /*for (int i=0; i < tempExprType.size(); i++)
+		System.out.println("CHECK THIS OUT: "+tempExprType.get(i));*/
 
         tempExprType.clear();
   }
@@ -2135,7 +2141,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
       ;
     }
     jj_consume_token(RPAR);
-        System.out.println("NARGS: "+nArgs);
+
   }
 
   static final public void ArgumentList() throws ParseException {
@@ -2228,7 +2234,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
               String type2=tempFuncParamsType.get(nArgs);
               error = true;
 
-              System.out.println(tempFuncParamsType);
+              //System.out.println(tempFuncParamsType);
 
               errorMessage = "Call: Invalid param("+nArgs+") id type: " +type1+" should be: "+type2;
               System.out.println("ERROR: " + errorMessage);
@@ -2273,7 +2279,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
         jjtree.closeNodeScope(jjtn002, true);
       }
       }
- System.out.println((String) t2.image);
+
     } else if (jj_2_48(2)) {
       SimpleNode jjtn003 = new SimpleNode(JJTINTEGER);
       boolean jjtc003 = true;
@@ -2285,7 +2291,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
         jjtree.closeNodeScope(jjtn003, true);
       }
       }
-     System.out.println("INTEGER: "+(String) t3.image);
+     //System.out.println("INTEGER: "+(String) t3.image);
 
     if (!tempFuncParamsType.get(nArgs).equals("scalar"))
     {
@@ -2427,7 +2433,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
         jjtc001 = false;
         size=true;
 
-        System.out.println("scalarAccess id: " + (String) t1.image);
+        //System.out.println("scalarAccess id: " + (String) t1.image);
         if (globalVar == true)
         {
           if (!globalVars.containsKey((String) t1.image))
@@ -2488,7 +2494,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
       ;
     }
           {
-                System.out.println(size+" "+globalVar+" "+localVar);
+                //System.out.println(size+" "+globalVar+" "+localVar);
           }
 
           if (size == false)
@@ -2546,7 +2552,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
         }else if (localVar == true && expr == false)
         {
                         String lastFunc=funcNames.get(funcNames.size()-1);
-                        System.out.println(lastFunc+" "+(String) t1.image);
+                        //System.out.println(lastFunc+" "+(String) t1.image);
 
           if (!localVars.containsKey(lastFunc+" "+(String) t1.image))
           {
@@ -2565,7 +2571,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
             Object ob1 = globalVars.get((String) t1.image);
             Object ob2 = localVars.get(lastFunc+" "+lastLocal);
 
-                        System.out.println(lastLocal+" "+(String) t1.image);
+                        //System.out.println(lastLocal+" "+(String) t1.image);
 
                 if (!ob1.getType().equals("scalar"))
           {
@@ -2591,7 +2597,7 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
         }else
                 {
                                 String lastLocal = order.get(order.size() - 1);
-                                System.out.println("GGGGGG: "+lastLocal);
+                                //System.out.println("GGGGGG: "+lastLocal);
                                 String func=funcNames.get(funcNames.size()-1);
 
                     Object ob1 = localVars.get(func+" "+(String) t1.image);
@@ -3211,11 +3217,6 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     finally { jj_save(50, xla); }
   }
 
-  static private boolean jj_3R_24() {
-    if (jj_scan_token(LPAR)) return true;
-    return false;
-  }
-
   static private boolean jj_3_48() {
     if (jj_scan_token(INTEGER)) return true;
     return false;
@@ -3717,6 +3718,11 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
     return false;
   }
 
+  static private boolean jj_3R_24() {
+    if (jj_scan_token(LPAR)) return true;
+    return false;
+  }
+
   static private boolean jj_initialized_once = false;
   /** Generated Token Manager. */
   static public GrammarTokenManager token_source;
@@ -3931,18 +3937,21 @@ public class Grammar/*@bgen(jjtree)*/implements GrammarTreeConstants, GrammarCon
       for (int i = 0; i < jj_endpos; i++) {
         jj_expentry[i] = jj_lasttokens[i];
       }
-      jj_entries_loop: for (java.util.Iterator<?> it = jj_expentries.iterator(); it.hasNext();) {
+      boolean exists = false;
+      for (java.util.Iterator<?> it = jj_expentries.iterator(); it.hasNext();) {
+        exists = true;
         int[] oldentry = (int[])(it.next());
         if (oldentry.length == jj_expentry.length) {
           for (int i = 0; i < jj_expentry.length; i++) {
             if (oldentry[i] != jj_expentry[i]) {
-              continue jj_entries_loop;
+              exists = false;
+              break;
             }
           }
-          jj_expentries.add(jj_expentry);
-          break jj_entries_loop;
+          if (exists) break;
         }
       }
+      if (!exists) jj_expentries.add(jj_expentry);
       if (pos != 0) jj_lasttokens[(jj_endpos = pos) - 1] = kind;
     }
   }
