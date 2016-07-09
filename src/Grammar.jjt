@@ -14,7 +14,6 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
   private static int localType = - 1, nArgs=0,aSize=-1;
   private static File teste;
   private static JVCgenerator gen;
-  private static boolean newVar = false;
     public static void main(String args []) throws FileNotFoundException,UnsupportedEncodingException  {
 	if(args.length != 1) {
 		System.out.println("Usage: java Grammar <fileName>.yal");
@@ -220,20 +219,11 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
         
         indexArray="null";
 
+        gen.loadInt(Integer.parseInt((String)t2.image));
 		
 		String lastGlobal = order.get(order.size() - 1);
 		
-        if (globalVar == true)
-			if(newVar) {
-				gen.saveToScalar(moduleName,lastGlobal,Integer.parseInt((String)t2.image));
-				newVar = false;
-			} else {
-				gen.loadInt(Integer.parseInt((String)t2.image));
-				gen.saveToScalar(moduleName,lastGlobal);
-			}
-					else		{
-			
-			gen.loadInt(Integer.parseInt((String)t2.image));
+        if (globalVar == true)        	gen.saveToScalar(moduleName,lastGlobal);		else		{
 		  String func=funcNames.get(funcNames.size()-1);
 		  
 		  LinkedHashMap < String, Object > hashParams=filterFunc(funcParams,func);
@@ -285,8 +275,7 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
   if (expr == true)
   	return;
 }  (    t1 = < ID >    {
-            if (globalVar == true)      {        if (!globalVars.containsKey((String) t1.image))        {          Object ob1 = new Object((String) t1.image, "scalar", "null");          globalVars.put((String) t1.image, ob1);          order.add((String) t1.image);
-		  newVar = true;        }        else        {         /* Object ob1 = globalVars.get((String) t1.image);          if (ob1.getType().equals("scalar"))          {            error = true;            errorMessage = "Scalar: Global var with same name: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }*/
+            if (globalVar == true)      {        if (!globalVars.containsKey((String) t1.image))        {          Object ob1 = new Object((String) t1.image, "scalar", "null");          globalVars.put((String) t1.image, ob1);          order.add((String) t1.image);        }        else        {         /* Object ob1 = globalVars.get((String) t1.image);          if (ob1.getType().equals("scalar"))          {            error = true;            errorMessage = "Scalar: Global var with same name: " + (String) t1.image;            System.out.println("ERROR: " + errorMessage);            System.exit(1);          }*/
                     order.add((String) t1.image);        }      }      if (funcParam == true)      {        String lastFunc = order.get(order.size() - 1);        if (!funcParams.containsKey(lastFunc + " " + (String) t1.image))        {          Object ob1 = new Object((String) t1.image, "scalar", "null");          funcParams.put(lastFunc + " " + (String) t1.image, ob1);          //System.out.println("Scalar: Func param id: " + (String) t1.image);          //order.add((String) t1.image);
         }        else        {          error = true;          errorMessage = "Scalar: Function param with same id: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }      }
 		
@@ -616,14 +605,8 @@ void Argument() #void :{  Token t1, t2, t3;}{
 		  	LinkedHashMap < String, Object > hashLocals=filterFunc(localVars,func);
 
 		  	int pos = hashParams.size() + (hashLocals.size() - (getIndex(hashLocals,lastGlobal)+1));*/
-
-			if(newVar) {
-				gen.saveToScalar(moduleName, lastGlobal, Integer.parseInt(globalVars.get((String)t1.image).getValue()));
-				newVar = false;
-			} else {
-				gen.loadScalar(moduleName, (String)t1.image);
-				gen.saveToScalar(moduleName, lastGlobal);
-			}
+		    gen.loadScalar(moduleName, (String)t1.image);
+		    gen.saveToScalar(moduleName, lastGlobal);
 		}
 		
           globalVars.put(lastGlobal, ob2);
