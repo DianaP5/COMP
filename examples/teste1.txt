@@ -12,6 +12,7 @@ abs=6;
 a[6]=9;
 
 function y[]=p(f[],p){
+a[1]=19;
 y=1;
 u=2;
 u=y;
@@ -20,18 +21,20 @@ l=9;
 g[3]=4;
 
 if(ab > b){
- a=3;
-}
+a[2]=19;
+ }
 }
 
 function z(ab,b){
-while(ab <p(a,2) & 7){
+while(g[5] < p(a,2) & 7){
+a[0]=19;
+
 n=8;
 }
 }
 
 function ffff(){
-
+a[0]=30;
 }
 
 }

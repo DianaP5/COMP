@@ -10,19 +10,23 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
     private static ArrayList < String > order = new ArrayList < String > ();
   private static ArrayList < String > funcNames = new ArrayList < String > ();
   private static ArrayList < String > tempFuncParamsType = new ArrayList < String > ();  private static ArrayList <String > tempExprType=new ArrayList <String > ();
-    private static String globalSignal, filename,errorMessage = "",indexArray="null", moduleName="";  private static Boolean globalVar = false, funcParam = false, localVar = false, error = false,expr=false,stm=false,arraySize=false,size=false,arrayAccess=false;
+  private static ArrayList <String > tempOpType=new ArrayList <String > ();
+    private static String globalSignal, filename,errorMessage = "",indexArray="null", moduleName="";  private static Boolean globalVar = false, funcParam = false, localVar = false, error = false,expr=false,stm=false,arraySize=false,size=false,arrayAccess=false, operation=false;
   private static int localType = - 1, nArgs=0,aSize=-1;
   private static File teste;
   private static JVCgenerator gen;
     public static void main(String args []) throws FileNotFoundException,UnsupportedEncodingException  {
-	if(args.length != 1) {
+	/*if(args.length != 1) {
 		System.out.println("Usage: java Grammar <fileName>.yal");
 		System.exit(1);
 	}
 	
-    File f1 = new File(args[0]);
+    File f1 = new File(args[0]);*/
+
+    File f1 = new File("examples/teste1.txt");
+    
 	gen=new JVCgenerator("generated");
-        if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();      root.dump("");      /* TESTING
+        if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();      //root.dump("");      /* TESTING
       for (int i=0; i < order.size(); i++)
       	System.out.println("ORDER: "+order.get(i));
 
@@ -60,6 +64,12 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
       System.out.println("ISTO: " + globalVars.get("g").getArray().get(3));
       */
 
+       System.out.println("ISTO: " + globalVars.get("g").getSize());
+      System.out.println("ISTO: " + globalVars.get("h").getValue());
+       System.out.println("ISTO: " + globalVars.get("g").getType());
+      System.out.println("ISTO: " + globalVars.get("a").getArray());
+	
+	
 	LinkedHashMap < String, Object > hash=filterFunc(funcParams,"p");
 /*
 	for (Entry<String, Object> e : hash.entrySet()) {	
@@ -238,7 +248,9 @@ import java.util.Map.Entry;public class Grammar{  /*local vars-> params func
     | (
       ScalarAccess() #ScalarAccess
     )  ))?
-< PVIRG >}void Function() #function :{  Token t1;}{  {    globalVar = false;  }  (    LOOKAHEAD(3)    (      < FUNCTION >      (        functionReturn() #funcReturn)      < ASSIGN > t1 = < ID >      {        if (!functions.containsKey((String) t1.image))        {          String lastReturn = order.get(order.size() - 1);          String returnName = funcReturn.get(lastReturn).getName();          functions.put((String) t1.image, returnName);          order.add((String) t1.image);
+
+< PVIRG >
+}void Function() #function :{  Token t1;}{  {    globalVar = false;  }  (    LOOKAHEAD(3)    (      < FUNCTION >      (        functionReturn() #funcReturn)      < ASSIGN > t1 = < ID >      {        if (!functions.containsKey((String) t1.image))        {          String lastReturn = order.get(order.size() - 1);          String returnName = funcReturn.get(lastReturn).getName();          functions.put((String) t1.image, returnName);          order.add((String) t1.image);
           funcNames.add((String) t1.image);        }        else        {          error = true;          errorMessage = "Functions with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }        //System.out.println("func assign id: " + (String) t1.image);      }      < LPAR >      (        Varlist() #VarList)?      < RPAR >    )  |    (      < FUNCTION > t1 = < ID >      {        if (!functions.containsKey((String) t1.image))        {          String lastReturn = order.get(order.size() - 1);          functions.put((String) t1.image, "null");          order.add((String) t1.image);
           funcNames.add((String) t1.image);        }        else        {          error = true;          errorMessage = "Functions with same name: " + (String) t1.image;          System.out.println("ERROR: " + errorMessage);          System.exit(1);        }        //System.out.println("func id: " + (String) t1.image);      }      < LPAR >      (        Varlist() #VarList)?      < RPAR >    )  )  {    funcParam = false;  }  < LCHAVETA > Stmtlst() #StmtLst < RCHAVETA >}void functionReturn() #void :{  Token t1;}{  (    t1 = < ID >    {      //System.out.println("Func return id: " + (String) t1.image);      //jjtThis.nameF = (String) t1.image; name_f1 = (String) t1.image;
       if (!funcReturn.containsKey((String) t1.image))      {        Object ob1 = new Object((String) t1.image, "scalar", "null");        funcReturn.put((String) t1.image, ob1);        order.add((String) t1.image);      }      else      {        error = true;        errorMessage = "Function: Return var with same id: " + (String) t1.image;        System.out.println("ERROR: " + errorMessage);        System.exit(1);      }    }    #ID)  (    "[" "]"    {      String lastReturn = order.get(order.size() - 1);      Object ob1 = funcReturn.get(lastReturn);      ob1.setType("array");      funcReturn.put(lastReturn, ob1);     // System.out.println("Func return type: ARRAY");    }  )?}void Varlist() #void :{}{  {    funcParam = true;  }  (    ArrayElement() #Array  | ScalarElement() #Scalar)(  < VIRG >  (    ArrayElement() #Array  | ScalarElement() #Scalar))*}void ArrayElement() #void :{  Token t1;}{
@@ -332,10 +344,29 @@ Declaration() #DECLARATION)| LOOKAHEAD(3)(  Assign() #ASSIGN)| Call() #CALL
     Lhs() #Lhs < ASSIGN > Rhs() #Rhs < PVIRG >
 
   {    localVar=false;
-  }}void Lhs() #void :{}{  (    ArrayAccess() #ArrayAccess  | ScalarAccess() #ScalarAccess)}void Rhs() #void :{  Token t1;}{  (    (Term() #Term)    (      (t1 = < ARITH_OP > #ARITHOP      | t1 = < BITWISE_OP > #BITWISEOP      | t1 = < ADDSUB_OP > #ADDSUBOP)      (Term() #Term) )?  )  | ("[" ArraySize() #ArraySize "]"
+  }}void Lhs() #void :{}{  (    ArrayAccess() #ArrayAccess  | ScalarAccess() #ScalarAccess)}void Rhs() #void :{  Token t1;}{  (    (Term() #Term)    (
+      {        operation=true;
+      }
+            (t1 = < ARITH_OP > #ARITHOP      | t1 = < BITWISE_OP > #BITWISEOP      | t1 = < ADDSUB_OP > #ADDSUBOP)      (Term() #Term) )?  )  | ("[" ArraySize() #ArraySize "]"
 {
   if (expr == true)  {
-    tempExprType.add("array");  }}
+    tempExprType.add("array");  }
+
+  if (operation == true)  {
+    for (int i=0; i < tempOpType.size(); i++)
+		if (tempOpType.size() > 1)
+			if (!tempOpType.get(i).equals(tempOpType.get(i-1)))
+				{
+		    	    error = true;
+		    	    int arg1=i-1;
+		            errorMessage = "Rhs: Different operands type: "+arg1+": "+ tempOpType.get(i-1)+" "+i+": "+tempOpType.get(i);
+		            System.out.println("ERROR: " + errorMessage);
+		            System.exit(1);
+		    	}
+				
+	tempOpType.clear();
+	
+    operation=false;  }}
   )}void ArraySize():{  Token t1;}
 {    {
     arraySize=true;
@@ -359,7 +390,9 @@ Declaration() #DECLARATION)| LOOKAHEAD(3)(  Assign() #ASSIGN)| Call() #CALL
             //System.out.println("array size: " + (String) t1.image);      /*jjtThis.arraysize = Integer.parseInt((String)t1.image);*/    }    #Int)}void Term() #void :{  Token t1, t2;}{  (t1 = < ADDSUB_OP > #AddSubOP)?  ((t2 = < INTEGER > #Integer  {
     if (expr == true)
     {		tempExprType.add("scalar");
-    }  })  |LOOKAHEAD(3) (Call() #Call)  |ArrayAccess() #ArrayAccess     |ScalarAccess() #ScalarAccess)
+    }
+    if (operation == true)    {
+      tempOpType.add("scalar");    }  })  |LOOKAHEAD(3) (Call() #Call)  |ArrayAccess() #ArrayAccess     |ScalarAccess() #ScalarAccess)
   
  }void While() :{}{
   {
@@ -376,6 +409,17 @@ Declaration() #DECLARATION)| LOOKAHEAD(3)(  Assign() #ASSIGN)| Call() #CALL
     //TODO	/*for (int i=0; i < tempExprType.size(); i++)
 		System.out.println("CHECK THIS OUT: "+tempExprType.get(i));*/
 
+	for (int i=0; i < tempExprType.size(); i++)
+		if (i % 2 > 0)
+			if (!tempExprType.get(i).equals(tempExprType.get(i-1)))
+				{
+		    	    error = true;
+		    	    int arg1=i-1;
+		            errorMessage = "Exprtest: Different argument type: "+arg1+": "+ tempExprType.get(i-1)+" "+i+": "+tempExprType.get(i);
+		            System.out.println("ERROR: " + errorMessage);
+		            System.exit(1);
+		    	}
+				
 	tempExprType.clear();
   }}void Call() #void :
 {
@@ -539,6 +583,11 @@ void Argument() #void :{  Token t1, t2, t3;}{
   	if (stm == true)
   		order.add((String) t1.image);
 
+    if (operation == true)
+    {
+      tempOpType.add("array");
+    }
+	
   	arrayAccess=false;
   }}void ScalarAccess() #void :{  Token t1;}
 {
@@ -789,6 +838,12 @@ void Argument() #void :{  Token t1, t2, t3;}{
 
 		
         size=false;
+  }
+
+  {    if (operation == true)
+	    {
+	      tempOpType.add("scalar");
+	    }
   }}void Index() #void :{  Token t1;}{  (    t1 = < ID >    {
 
       String lastGlobal=order.get(order.size()-1);

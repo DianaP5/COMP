@@ -14,19 +14,23 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
     private static ArrayList < String > order = new ArrayList < String > ();
   private static ArrayList < String > funcNames = new ArrayList < String > ();
   private static ArrayList < String > tempFuncParamsType = new ArrayList < String > ();  private static ArrayList <String > tempExprType=new ArrayList <String > ();
-    private static String globalSignal, filename,errorMessage = "",indexArray="null", moduleName="";  private static Boolean globalVar = false, funcParam = false, localVar = false, error = false,expr=false,stm=false,arraySize=false,size=false,arrayAccess=false;
+  private static ArrayList <String > tempOpType=new ArrayList <String > ();
+    private static String globalSignal, filename,errorMessage = "",indexArray="null", moduleName="";  private static Boolean globalVar = false, funcParam = false, localVar = false, error = false,expr=false,stm=false,arraySize=false,size=false,arrayAccess=false, operation=false;
   private static int localType = - 1, nArgs=0,aSize=-1;
   private static File teste;
   private static JVCgenerator gen;
     public static void main(String args []) throws FileNotFoundException,UnsupportedEncodingException  {
-	if(args.length != 1) {
+	/*if(args.length != 1) {
 		System.out.println("Usage: java Grammar <fileName>.yal");
 		System.exit(1);
 	}
 	
-    File f1 = new File(args[0]);
+    File f1 = new File(args[0]);*/
+
+    File f1 = new File("examples/teste1.txt");
+    
 	gen=new JVCgenerator("generated");
-        if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();      root.dump("");      /* TESTING
+        if (f1.exists())    {      FileInputStream s1 = new FileInputStream(f1);      System.out.println("Reading file...");    }    else System.out.println("File not found.");    try    {      BufferedReader stream = new BufferedReader(new FileReader(f1));      Grammar myYal = new Grammar(stream);      SimpleNode root = myYal.Module();      //root.dump("");      /* TESTING
       for (int i=0; i < order.size(); i++)
       	System.out.println("ORDER: "+order.get(i));
 
@@ -64,6 +68,12 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
       System.out.println("ISTO: " + globalVars.get("g").getArray().get(3));
       */
 
+       System.out.println("ISTO: " + globalVars.get("g").getSize());
+      System.out.println("ISTO: " + globalVars.get("h").getValue());
+       System.out.println("ISTO: " + globalVars.get("g").getType());
+      System.out.println("ISTO: " + globalVars.get("a").getArray());
+	
+	
 	LinkedHashMap < String, Object > hash=filterFunc(funcParams,"p");
 /*
 	for (Entry<String, Object> e : hash.entrySet()) {	
@@ -516,7 +526,9 @@ import java.util.Map.Entry;public class Grammar/*@bgen(jjtree)*/implements Gra
       }
 /*@egen*/              
     )  ))?
-< PVIRG >}void Function()           :{/*@bgen(jjtree) function */
+
+< PVIRG >
+}void Function()           :{/*@bgen(jjtree) function */
   SimpleNode jjtn000 = new SimpleNode(JJTFUNCTION);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
@@ -1234,7 +1246,10 @@ Declaration()/*@bgen(jjtree)*/
          jjtree.closeNodeScope(jjtn001, true);
        }
      }
-/*@egen*/      )    (      (/*@bgen(jjtree) ARITHOP */
+/*@egen*/      )    (
+      {        operation=true;
+      }
+            (/*@bgen(jjtree) ARITHOP */
        {
          SimpleNode jjtn002 = new SimpleNode(JJTARITHOP);
          boolean jjtc002 = true;
@@ -1330,7 +1345,23 @@ Declaration()/*@bgen(jjtree)*/
 /*@egen*/            "]"
 {
   if (expr == true)  {
-    tempExprType.add("array");  }}
+    tempExprType.add("array");  }
+
+  if (operation == true)  {
+    for (int i=0; i < tempOpType.size(); i++)
+		if (tempOpType.size() > 1)
+			if (!tempOpType.get(i).equals(tempOpType.get(i-1)))
+				{
+		    	    error = true;
+		    	    int arg1=i-1;
+		            errorMessage = "Rhs: Different operands type: "+arg1+": "+ tempOpType.get(i-1)+" "+i+": "+tempOpType.get(i);
+		            System.out.println("ERROR: " + errorMessage);
+		            System.exit(1);
+		    	}
+				
+	tempOpType.clear();
+	
+    operation=false;  }}
   )}void ArraySize():{/*@bgen(jjtree) ArraySize */
   SimpleNode jjtn000 = new SimpleNode(JJTARRAYSIZE);
   boolean jjtc000 = true;
@@ -1451,7 +1482,9 @@ Declaration()/*@bgen(jjtree)*/
 /*@egen*/           {
     if (expr == true)
     {		tempExprType.add("scalar");
-    }  })  |LOOKAHEAD(3) (/*@bgen(jjtree) Call */
+    }
+    if (operation == true)    {
+      tempOpType.add("scalar");    }  })  |LOOKAHEAD(3) (/*@bgen(jjtree) Call */
                  {
                    SimpleNode jjtn003 = new SimpleNode(JJTCALL);
                    boolean jjtc003 = true;
@@ -1847,6 +1880,17 @@ Declaration()/*@bgen(jjtree)*/
     //TODO	/*for (int i=0; i < tempExprType.size(); i++)
 		System.out.println("CHECK THIS OUT: "+tempExprType.get(i));*/
 
+	for (int i=0; i < tempExprType.size(); i++)
+		if (i % 2 > 0)
+			if (!tempExprType.get(i).equals(tempExprType.get(i-1)))
+				{
+		    	    error = true;
+		    	    int arg1=i-1;
+		            errorMessage = "Exprtest: Different argument type: "+arg1+": "+ tempExprType.get(i-1)+" "+i+": "+tempExprType.get(i);
+		            System.out.println("ERROR: " + errorMessage);
+		            System.exit(1);
+		    	}
+				
 	tempExprType.clear();
   }}void Call()       :
 {
@@ -2121,6 +2165,11 @@ void Argument()       :{  Token t1, t2, t3;}{
   	if (stm == true)
   		order.add((String) t1.image);
 
+    if (operation == true)
+    {
+      tempOpType.add("array");
+    }
+	
   	arrayAccess=false;
   }}void ScalarAccess()       :{  Token t1;}
 {
@@ -2389,6 +2438,12 @@ void Argument()       :{  Token t1, t2, t3;}{
 
 		
         size=false;
+  }
+
+  {    if (operation == true)
+	    {
+	      tempOpType.add("scalar");
+	    }
   }}void Index()       :{  Token t1;}{  (    t1 = < ID >/*@bgen(jjtree) ID */
     {
       SimpleNode jjtn001 = new SimpleNode(JJTID);
